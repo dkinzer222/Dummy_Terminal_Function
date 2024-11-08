@@ -15,14 +15,13 @@
 }
 
 .matrix-bg {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     opacity: 0.3;
     z-index: 1;
-    display: none;
 }
 
 #progress-tab .matrix-bg {
@@ -31,9 +30,11 @@
 }
 
 .matrix-text {
-    font-size: 10px;
+    font-size: 12px;
     position: absolute;
-    animation: matrix-fall 3s linear infinite, rgb-glow 3s infinite;
+    color: #00ff00;
+    text-shadow: 0 0 5px #00ff00;
+    animation: matrix-fall 4s linear infinite, rgb-glow 3s infinite;
 }
 
 @keyframes matrix-fall {
@@ -42,10 +43,10 @@
 }
 
 @keyframes rgb-glow {
-    0% { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+    0% { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
     33% { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
-    66% { color: #0000ff; text-shadow: 0 0 10px #0000ff; }
-    100% { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+    66% { color: #00ff00; text-shadow: 0 0 15px #00ff00; }
+    100% { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
 }
 
 .terminal-output {
@@ -91,7 +92,6 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 25vh;
     background-color: rgba(31, 31, 31, 0.95);
     transform: translateY(100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -104,28 +104,18 @@
     transform: translateY(0);
 }
 
-.keyboard-controls {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px;
-    border-bottom: 1px solid var(--border-color);
-    background-color: rgba(0, 0, 0, 0.2);
-    margin-bottom: 8px;
-}
-
 .keyboard-row {
     display: flex;
     justify-content: center;
     gap: 4px;
     margin-bottom: 4px;
-    flex-wrap: wrap;
 }
 
 .key {
-    height: 32px;
-    min-width: 32px;
-    font-size: 12px;
-    padding: 4px 6px;
+    height: 40px;
+    min-width: 40px;
+    font-size: 14px;
+    padding: 4px 8px;
     background-color: rgba(45, 45, 45, 0.95);
     border: none;
     border-radius: 4px;
@@ -137,30 +127,41 @@
     user-select: none;
     transition: all 0.2s ease;
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
-    flex: 0 0 auto;
 }
 
 .key.function-key {
-    font-size: 11px;
-    min-width: 40px;
-}
-
-.key.modifier-key {
+    font-size: 12px;
     min-width: 50px;
 }
 
+.key.modifier-key {
+    min-width: 70px;
+}
+
 .key.space-key {
-    width: 160px;
+    min-width: 200px;
 }
 
 .key:active {
     transform: translateY(1px);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    background-color: rgba(60, 60, 60, 0.95);
 }
 
 @media (max-width: 768px) {
     .terminal {
         height: calc(100vh - 240px);
+    }
+    
+    .keyboard-container {
+        height: auto;
+        max-height: 35vh;
+    }
+    
+    .key {
+        height: 35px;
+        min-width: 35px;
+        font-size: 12px;
     }
 }
 

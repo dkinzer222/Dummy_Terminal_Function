@@ -30,20 +30,50 @@ class Terminal {
     setupInput() {
         if (!this.input) return;
         
+        // Prevent iOS keyboard
+        this.input.setAttribute('readonly', 'readonly');
+        
         this.input.addEventListener('focus', () => {
             if (window.keyboard) {
                 window.keyboard.toggleKeyboard(true);
             }
         });
 
-        this.input.addEventListener('click', () => {
-            if (window.keyboard) {
-                window.keyboard.toggleKeyboard(true);
-            }
-        });
-
-        // Remove readonly attribute
-        this.input.removeAttribute('readonly');
+        // Handle keyboard input through custom keyboard only
+        if (window.keyboard) {
+            window.keyboard.onKeyPress = (key) => {
+                switch(key) {
+                    case 'Backspace':
+                        this.input.value = this.input.value.slice(0, -1);
+                        break;
+                    case 'Enter':
+                        const command = this.input.value.trim();
+                        if (command) {
+                            this.write(`$ ${command}`, 'command');
+                            this.executeCommand(command);
+                        }
+                        this.input.value = '';
+                        break;
+                    case 'Space':
+                        this.input.value += ' ';
+                        break;
+                    case 'Tab':
+                    case 'Shift':
+                    case 'Ctrl':
+                    case 'Alt':
+                    case 'Caps':
+                        // Ignore these keys
+                        break;
+                    default:
+                        if (key.startsWith('F')) {
+                            // Handle function keys if needed
+                            break;
+                        }
+                        this.input.value += key;
+                }
+                this.input.focus();
+            };
+        }
     }
 
     setupTerminalHeader() {
@@ -76,14 +106,10 @@ class Terminal {
     addEventListeners() {
         if (!this.input) return;
 
-        this.input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const command = this.input.value.trim();
-                if (command) {
-                    this.write(`$ ${command}`, 'command');
-                    this.executeCommand(command);
-                }
-                this.input.value = '';
+        // Remove keydown event listener since we're using custom keyboard
+        this.input.addEventListener('click', () => {
+            if (window.keyboard) {
+                window.keyboard.toggleKeyboard(true);
             }
         });
     }
