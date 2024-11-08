@@ -1,11 +1,39 @@
 .terminal {
-    height: 100%;
+    height: calc(100vh - 200px);
     background-color: var(--terminal-bg);
     color: var(--text-color);
     font-family: 'Courier New', monospace;
     padding: 10px;
     display: flex;
     flex-direction: column;
+    position: relative;
+    transition: height 0.3s ease;
+}
+
+.terminal.minimized {
+    height: 50px;
+    overflow: hidden;
+}
+
+.terminal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.terminal-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.terminal-control-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    padding: 5px;
 }
 
 .terminal-output {
@@ -14,11 +42,17 @@
     padding: 10px;
 }
 
+.terminal-line {
+    animation: rgb-glow 3s infinite;
+    margin: 2px 0;
+}
+
 .terminal-input {
     display: flex;
     align-items: center;
     padding: 5px;
     background-color: transparent;
+    border-top: 1px solid var(--border-color);
 }
 
 .prompt {
@@ -33,27 +67,101 @@
     font-family: 'Courier New', monospace;
     flex: 1;
     outline: none;
+    font-size: 16px;
 }
 
 .keyboard-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #1f1f1f;
+    padding: 5px;
     display: grid;
     grid-template-columns: repeat(10, 1fr);
-    gap: 5px;
-    padding: 10px;
-    background-color: var(--button-bg);
+    gap: 4px;
+    border-top: 1px solid var(--border-color);
+    height: 180px;
+}
+
+.keyboard-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 4px;
 }
 
 .key {
-    background-color: var(--card-bg);
-    border: 1px solid var(--accent-color);
+    flex: 1;
+    height: 40px;
+    background-color: #2d2d2d;
+    border: none;
     border-radius: 5px;
-    padding: 10px;
-    text-align: center;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
     cursor: pointer;
     user-select: none;
     transition: background-color 0.2s;
 }
 
 .key:active {
-    background-color: var(--accent-color);
+    background-color: #3d3d3d;
+}
+
+.key[data-key="space"] {
+    grid-column: span 6;
+}
+
+.key[data-key="return"] {
+    grid-column: span 2;
+}
+
+@keyframes rgb-glow {
+    0% { text-shadow: 0 0 10px #ff0000; }
+    33% { text-shadow: 0 0 10px #00ff00; }
+    66% { text-shadow: 0 0 10px #0000ff; }
+    100% { text-shadow: 0 0 10px #ff0000; }
+}
+
+/* Tools Menu */
+.tools-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--terminal-bg);
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tools-menu.expanded {
+    transform: translateY(0);
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    padding: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .terminal {
+        height: calc(100vh - 240px);
+    }
+    
+    .keyboard-container {
+        height: 200px;
+    }
+    
+    .key {
+        height: 45px;
+        font-size: 14px;
+    }
 }
