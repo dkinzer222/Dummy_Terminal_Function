@@ -20,16 +20,14 @@ class VirtualKeyboard {
 
     render() {
         this.container.innerHTML = this.layout.map((row, i) => `
-            <div class="keyboard-row">
+            <div class="keyboard-row" style="grid-template-columns: repeat(${row.length}, 1fr);">
                 ${row.map(key => {
                     let className = 'key';
-                    if (key === 'space') className += ' space-key';
-                    if (key === 'return') className += ' return-key';
+                    if (key === 'space') className += ' space';
+                    if (key === 'return') className += ' return';
                     if (key === '🌐' || key === '🎤' || key === '⌨') className += ' special-key';
                     if (key === '⇧' || key === '⌫' || key === '123') className += ' system-key';
-                    return `<button class="${className}" data-key="${key}">
-                        ${key === 'space' ? '' : key}
-                    </button>`;
+                    return `<button class="${className}" data-key="${key}">${key === 'space' ? '' : key}</button>`;
                 }).join('')}
             </div>
         `).join('');
@@ -38,8 +36,7 @@ class VirtualKeyboard {
     handleKey(key) {
         switch(key) {
             case '⇧':
-                this.isShift = !this.isShift;
-                this.updateShiftState();
+                this.toggleShift();
                 break;
             case '⌫':
                 this.handleBackspace();
@@ -69,7 +66,7 @@ class VirtualKeyboard {
                     this.insertText(this.isShift ? key.toUpperCase() : key.toLowerCase());
                     if (this.isShift) {
                         this.isShift = false;
-                        this.updateShiftState();
+                        this.toggleShift();
                     }
                 }
         }
@@ -111,7 +108,8 @@ class VirtualKeyboard {
         this.input.dispatchEvent(event);
     }
 
-    updateShiftState() {
+    toggleShift() {
+        this.isShift = !this.isShift;
         const keys = this.container.querySelectorAll('.key:not(.special-key):not(.system-key)');
         keys.forEach(key => {
             const keyText = key.textContent.trim();

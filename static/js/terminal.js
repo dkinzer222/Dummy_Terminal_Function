@@ -3,145 +3,131 @@ class Terminal {
         this.terminal = document.querySelector('.terminal');
         this.output = document.querySelector('.terminal-output');
         this.input = document.querySelector('.command-input');
+        this.prompt = document.querySelector('.prompt');
         this.history = [];
         this.historyIndex = -1;
         this.username = 'mobile';
         this.device = 'Jeffs-iPhone';
-        this.commandHandlers = {
-            'help': () => this.showHelp(),
-            'clear': () => this.clear(),
-            'scan': (args) => this.runPortScan(args),
-            'lookup': (args) => this.ipLookup(args),
-            'dns': (args) => this.dnsLookup(args)
-        };
-        
-        this.commandMeta = {
+        this.commands = {
             'help': { 
-                description: 'Show available commands and usage',
-                args: [],
-                examples: ['help']
+                desc: 'Show available commands',
+                fn: () => this.showHelp()
             },
-            'clear': { 
-                description: 'Clear terminal screen',
-                args: [],
-                examples: ['clear']
+            'clear': {
+                desc: 'Clear terminal screen',
+                fn: () => this.clear()
             },
-            'scan': { 
-                description: 'Scan ports on specified host',
-                args: ['<host>'],
-                examples: ['scan localhost', 'scan 192.168.1.1']
+            'ls': {
+                desc: 'List directory contents',
+                fn: () => this.listDirectory()
             },
-            'lookup': { 
-                description: 'Lookup information for IP address',
-                args: ['<ip>'],
-                examples: ['lookup 8.8.8.8', 'lookup 1.1.1.1']
-            },
-            'dns': {
-                description: 'Perform DNS lookup for domain',
-                args: ['<domain>'],
-                examples: ['dns example.com', 'dns google.com']
+            'pwd': {
+                desc: 'Print working directory',
+                fn: () => this.printWorkingDirectory()
             }
         };
-        
-        this.suggestions = [];
-        this.suggestionIndex = -1;
-        this.init();
-    }
-
-    init() {
-        this.welcomeMessage();
-        this.addEventListeners();
+        this.setupAutocompletion();
         this.updatePrompt();
-        this.createSuggestionsBox();
+        this.welcomeMessage();
     }
 
-    createSuggestionsBox() {
-        this.suggestionsBox = document.createElement('div');
-        this.suggestionsBox.className = 'suggestions-box';
-        this.terminal.appendChild(this.suggestionsBox);
+    setupAutocompletion() {
+        this.suggestions = document.createElement('div');
+        this.suggestions.className = 'suggestions-box';
+        this.terminal.appendChild(this.suggestions);
+
+        this.input.addEventListener('input', () => this.updateSuggestions());
+        this.input.addEventListener('keydown', (e) => this.handleKeydown(e));
+        document.addEventListener('click', () => this.suggestions.style.display = 'none');
     }
 
-    updateSuggestions(input) {
-        const parts = input.split(' ');
-        const cmd = parts[0].toLowerCase();
-        const args = parts.slice(1);
-        let suggestions = [];
-
-        if (args.length === 0) {
-            suggestions = Object.entries(this.commandMeta)
-                .filter(([name]) => name.startsWith(cmd))
-                .map(([name, meta]) => ({
-                    text: name,
-                    description: meta.description
-                }));
-        } else if (this.commandMeta[cmd]) {
-            const meta = this.commandMeta[cmd];
-            if (meta.args && meta.args.length >= args.length) {
-                const currentArgIndex = args.length - 1;
-                const currentArg = args[currentArgIndex].toLowerCase();
-                
-                suggestions = meta.examples
-                    .map(example => {
-                        const exampleArgs = example.split(' ');
-                        return {
-                            text: exampleArgs[currentArgIndex + 1] || '',
-                            description: `Example: ${example}`
-                        };
-                    })
-                    .filter(s => s.text.toLowerCase().startsWith(currentArg));
-            }
-        }
-
-        this.suggestions = suggestions;
-        this.suggestionIndex = -1;
-        this.showSuggestions();
-    }
-
-    showSuggestions() {
-        if (this.suggestions.length === 0) {
-            this.suggestionsBox.style.display = 'none';
+    updateSuggestions() {
+        const input = this.input.value.toLowerCase();
+        if (!input) {
+            this.suggestions.style.display = 'none';
             return;
         }
 
-        this.suggestionsBox.innerHTML = this.suggestions
-            .map((suggestion, i) => `
-                <div class="suggestion${i === this.suggestionIndex ? ' selected' : ''}">
-                    <span class="suggestion-text">${suggestion.text}</span>
-                    <span class="suggestion-description">${suggestion.description}</span>
-                </div>
-            `).join('');
-        this.suggestionsBox.style.display = 'block';
+        const matches = Object.entries(this.commands)
+            .filter(([cmd]) => cmd.startsWith(input))
+            .map(([cmd, details]) => ({
+                command: cmd,
+                description: details.desc
+            }));
+
+        if (matches.length === 0) {
+            this.suggestions.style.display = 'none';
+            return;
+        }
+
+        this.suggestions.innerHTML = matches.map(match => `
+            <div class="suggestion">
+                <div class="suggestion-text">${match.command}</div>
+                <div class="suggestion-description">${match.description}</div>
+            </div>
+        `).join('');
+        this.suggestions.style.display = 'block';
     }
 
-    applySuggestion() {
-        if (this.suggestionIndex === -1 && this.suggestions.length > 0) {
-            this.suggestionIndex = 0;
+    handleKeydown(e) {
+        switch(e.key) {
+            case 'Enter':
+                e.preventDefault();
+                this.execute(this.input.value);
+                break;
+            case 'Tab':
+                e.preventDefault();
+                this.autocomplete();
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                this.navigateHistory(-1);
+                break;
+            case 'ArrowDown':
+                e.preventDefault();
+                this.navigateHistory(1);
+                break;
         }
-        if (this.suggestionIndex >= 0) {
-            const parts = this.input.value.split(' ');
-            const suggestion = this.suggestions[this.suggestionIndex].text;
+    }
+
+    autocomplete() {
+        const input = this.input.value.toLowerCase();
+        const matches = Object.keys(this.commands).filter(cmd => cmd.startsWith(input));
+        
+        if (matches.length === 1) {
+            this.input.value = matches[0];
+            this.suggestions.style.display = 'none';
+        }
+    }
+
+    execute(command) {
+        const cmd = command.trim().toLowerCase();
+        this.write(`${this.device}:~ ${this.username}$ ${command}`, 'command');
+        
+        if (cmd) {
+            this.history.push(cmd);
+            this.historyIndex = this.history.length;
             
-            if (parts.length === 1) {
-                this.input.value = suggestion;
+            if (this.commands[cmd]) {
+                this.commands[cmd].fn();
             } else {
-                parts[parts.length - 1] = suggestion;
-                this.input.value = parts.join(' ');
+                this.write(`Command not found: ${cmd}`);
             }
         }
-        this.suggestionsBox.style.display = 'none';
+        
+        this.input.value = '';
+        this.suggestions.style.display = 'none';
     }
 
-    updatePrompt() {
-        const prompt = document.querySelector('.prompt');
-        if (prompt) {
-            prompt.textContent = `${this.device}:~ ${this.username}$`;
+    navigateHistory(direction) {
+        if (direction === -1 && this.historyIndex > 0) {
+            this.historyIndex--;
+        } else if (direction === 1 && this.historyIndex < this.history.length) {
+            this.historyIndex++;
         }
-    }
-
-    welcomeMessage() {
-        this.write('Network Security Toolkit v1.0');
-        this.write('Type "help" for available commands');
-        this.write('');
+        
+        this.input.value = this.historyIndex < this.history.length ? 
+            this.history[this.historyIndex] : '';
     }
 
     write(text, className = '') {
@@ -158,94 +144,29 @@ class Terminal {
 
     showHelp() {
         this.write('Available commands:');
-        Object.entries(this.commandMeta).forEach(([name, meta]) => {
-            this.write(`  ${name} ${meta.args.join(' ')} - ${meta.description}`);
+        Object.entries(this.commands).forEach(([cmd, details]) => {
+            this.write(`  ${cmd}\t${details.desc}`);
         });
     }
 
-    addEventListeners() {
-        this.input.addEventListener('keydown', (e) => {
-            switch (e.key) {
-                case 'Tab':
-                    e.preventDefault();
-                    if (this.suggestions.length > 0) {
-                        this.applySuggestion();
-                    }
-                    break;
-                    
-                case 'ArrowUp':
-                    e.preventDefault();
-                    if (this.suggestions.length > 0) {
-                        this.suggestionIndex = Math.max(0, this.suggestionIndex - 1);
-                        this.showSuggestions();
-                    } else if (this.historyIndex > 0) {
-                        this.historyIndex--;
-                        this.input.value = this.history[this.historyIndex];
-                    }
-                    break;
-                    
-                case 'ArrowDown':
-                    e.preventDefault();
-                    if (this.suggestions.length > 0) {
-                        this.suggestionIndex = Math.min(
-                            this.suggestions.length - 1,
-                            this.suggestionIndex + 1
-                        );
-                        this.showSuggestions();
-                    } else if (this.historyIndex < this.history.length - 1) {
-                        this.historyIndex++;
-                        this.input.value = this.history[this.historyIndex];
-                    } else {
-                        this.historyIndex = this.history.length;
-                        this.input.value = '';
-                    }
-                    break;
-                    
-                case 'Enter':
-                    const command = this.input.value.trim();
-                    if (command) {
-                        this.executeCommand(command);
-                        this.history.push(command);
-                        this.historyIndex = this.history.length;
-                    }
-                    this.input.value = '';
-                    this.suggestionsBox.style.display = 'none';
-                    break;
-                    
-                case 'Escape':
-                    this.suggestionsBox.style.display = 'none';
-                    break;
-            }
-        });
-
-        this.input.addEventListener('input', () => {
-            this.updateSuggestions(this.input.value);
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!this.suggestionsBox.contains(e.target)) {
-                this.suggestionsBox.style.display = 'none';
-            }
-        });
+    listDirectory() {
+        this.write('Desktop  Documents  Downloads');
     }
 
-    executeCommand(command) {
-        this.write(`${this.device}:~ ${this.username}$ ${command}`, 'command');
-        const [cmd, ...args] = command.split(' ');
-        
-        if (this.commandHandlers[cmd]) {
-            this.commandHandlers[cmd](args);
-        } else {
-            this.write(`Command not found: ${cmd}`);
-            const suggestions = Object.keys(this.commandHandlers)
-                .filter(c => c.startsWith(cmd));
-            if (suggestions.length > 0) {
-                this.write('Did you mean one of these?');
-                suggestions.forEach(suggestion => {
-                    this.write(`  ${suggestion} - ${this.commandMeta[suggestion].description}`);
-                });
-            }
+    printWorkingDirectory() {
+        this.write('/home/mobile');
+    }
+
+    updatePrompt() {
+        if (this.prompt) {
+            this.prompt.textContent = `${this.device}:~ ${this.username}$`;
         }
+    }
+
+    welcomeMessage() {
+        this.write('Network Security Toolkit v1.0');
+        this.write('Type "help" for available commands');
+        this.write('');
     }
 }
 

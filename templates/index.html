@@ -3,20 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Network Security Toolkit</title>
+    <title>Terminal</title>
     <link href="{{ url_for('static', filename='css/terminal.css') }}" rel="stylesheet">
 </head>
 <body>
     <div class="terminal">
         <div class="terminal-output"></div>
         <div class="terminal-input">
-            <span class="prompt"></span>
+            <span class="prompt">Jeffs-iPhone:~ mobile$</span>
             <input type="text" class="command-input" autocomplete="off" spellcheck="false">
         </div>
     </div>
-    <div class="keyboard-container">
-        <!-- Keyboard will be dynamically generated -->
-    </div>
+    <div class="keyboard-container"></div>
     <script src="{{ url_for('static', filename='js/terminal.js') }}"></script>
     <script src="{{ url_for('static', filename='js/keyboard.js') }}"></script>
 </body>

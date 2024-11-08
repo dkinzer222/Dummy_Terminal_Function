@@ -11,12 +11,12 @@ body {
     flex: 1;
     background-color: #000000;
     color: #ffffff;
-    font-family: 'Menlo', 'Monaco', monospace;
+    font-family: Menlo, Monaco, 'Courier New', monospace;
     display: flex;
     flex-direction: column;
     font-size: 14px;
     line-height: 1.5;
-    padding: 16px;
+    padding: 8px;
     position: relative;
 }
 
@@ -24,7 +24,7 @@ body {
     flex: 1;
     overflow-y: auto;
     margin-bottom: 8px;
-    padding: 8px;
+    padding: 4px;
 }
 
 .terminal-line {
@@ -41,25 +41,28 @@ body {
     display: flex;
     align-items: center;
     background-color: transparent;
-    padding: 8px;
+    padding: 4px;
 }
 
 .prompt {
     color: #ffffff;
     margin-right: 8px;
     font-weight: 500;
+    font-family: Menlo, Monaco, 'Courier New', monospace;
 }
 
 .command-input {
     background: transparent;
     border: none;
     color: #ffffff;
-    font-family: inherit;
+    font-family: Menlo, Monaco, 'Courier New', monospace;
     font-size: inherit;
     flex: 1;
     outline: none;
     position: relative;
     caret-color: #ffffff;
+    padding: 0;
+    margin: 0;
 }
 
 .command-input::after {
@@ -68,29 +71,28 @@ body {
     right: 0;
     top: 0;
     width: 8px;
-    height: 16px;
+    height: 15px;
     background-color: #ffffff;
     animation: blink 1s step-end infinite;
 }
 
 @keyframes blink {
-    0% { opacity: 1; }
+    0%, 100% { opacity: 1; }
     50% { opacity: 0; }
-    100% { opacity: 1; }
 }
 
 .keyboard-container {
     background-color: #333333;
-    padding: 8px 4px;
+    padding: 5px;
     user-select: none;
     display: grid;
     grid-template-rows: repeat(4, 1fr);
-    gap: 1px;
+    gap: 4px;
 }
 
 .keyboard-row {
     display: grid;
-    gap: 1px;
+    gap: 4px;
     margin-bottom: 1px;
 }
 
@@ -111,11 +113,11 @@ body {
 }
 
 .key {
-    background-color: #333333;
+    background-color: #444444;
     color: #ffffff;
     border: none;
     border-radius: 5px;
-    padding: 12px 8px;
+    padding: 10px;
     text-align: center;
     font-size: 16px;
     cursor: pointer;
@@ -127,7 +129,7 @@ body {
 }
 
 .key:active {
-    background-color: #444444;
+    background-color: #555555;
 }
 
 .key.special-key {
@@ -139,7 +141,7 @@ body {
 }
 
 .key.return-key {
-    background-color: #6B57FF;
+    background-color: #6366f1;
 }
 
 .suggestions-box {
@@ -147,8 +149,8 @@ body {
     bottom: calc(100% + 8px);
     left: 16px;
     right: 16px;
-    background-color: #333333;
-    border: 1px solid #444444;
+    background-color: #000000;
+    border: 1px solid #333333;
     border-radius: 8px;
     max-height: 200px;
     overflow-y: auto;
@@ -168,7 +170,7 @@ body {
 
 .suggestion:hover,
 .suggestion.selected {
-    background-color: #444444;
+    background-color: #333333;
 }
 
 .suggestion-text {
@@ -178,7 +180,7 @@ body {
 }
 
 .suggestion-description {
-    color: #999999;
+    color: #666666;
     font-size: 12px;
 }
 
