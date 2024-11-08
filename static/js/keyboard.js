@@ -37,6 +37,7 @@ class VirtualKeyboard {
             this.createKeyboardToggle();
             this.render();
             this.addEventListeners();
+            this.preventNativeKeyboard();
         } else {
             console.warn('Keyboard elements not found, retrying initialization...');
             setTimeout(() => this.init(), 500);
@@ -47,6 +48,20 @@ class VirtualKeyboard {
         this.container = document.querySelector('.keyboard-container');
         this.input = document.querySelector('.command-input');
         this.terminal = document.querySelector('.terminal');
+    }
+
+    preventNativeKeyboard() {
+        if (this.input) {
+            // Prevent native keyboard on iOS
+            this.input.setAttribute('readonly', 'readonly');
+            this.input.addEventListener('focus', (e) => {
+                e.preventDefault();
+                this.input.blur();
+                setTimeout(() => {
+                    this.input.focus();
+                }, 100);
+            });
+        }
     }
 
     createKeyboardContainer() {
@@ -226,8 +241,7 @@ class VirtualKeyboard {
         if (!this.input) return;
 
         this.input.removeAttribute('readonly');
-        let shouldFocus = true;
-
+        
         switch(value) {
             case 'Shift':
                 this.isShift = !this.isShift;
@@ -238,10 +252,18 @@ class VirtualKeyboard {
                 this.updateModifierState();
                 break;
             case 'Backspace':
-                this.input.value = this.input.value.slice(0, -1);
+                const start = this.input.selectionStart;
+                const end = this.input.selectionEnd;
+                if (start === end) {
+                    this.input.value = this.input.value.slice(0, start - 1) + this.input.value.slice(start);
+                    this.input.selectionStart = this.input.selectionEnd = start - 1;
+                } else {
+                    this.input.value = this.input.value.slice(0, start) + this.input.value.slice(end);
+                    this.input.selectionStart = this.input.selectionEnd = start;
+                }
                 break;
             case 'Space':
-                this.input.value += ' ';
+                this.insertAtCursor(' ');
                 break;
             case 'Enter':
                 if (this.input.value.trim()) {
@@ -254,12 +276,12 @@ class VirtualKeyboard {
                 }
                 break;
             case 'Tab':
-                this.input.value += '\t';
+                this.insertAtCursor('\t');
                 break;
             default:
                 if (value.length === 1) {
                     const isUpper = (this.isShift && !this.isCaps) || (!this.isShift && this.isCaps);
-                    this.input.value += isUpper ? value.toUpperCase() : value.toLowerCase();
+                    this.insertAtCursor(isUpper ? value.toUpperCase() : value.toLowerCase());
                     if (this.isShift) {
                         this.isShift = false;
                         this.updateModifierState();
@@ -267,12 +289,18 @@ class VirtualKeyboard {
                 }
         }
 
+        // Ensure the input stays focused and readonly
         setTimeout(() => {
-            this.input.setAttribute('readonly', true);
-            if (shouldFocus) {
-                this.input.focus();
-            }
+            this.input.setAttribute('readonly', 'readonly');
+            this.input.focus();
         }, 0);
+    }
+
+    insertAtCursor(text) {
+        const start = this.input.selectionStart;
+        const end = this.input.selectionEnd;
+        this.input.value = this.input.value.slice(0, start) + text + this.input.value.slice(end);
+        this.input.selectionStart = this.input.selectionEnd = start + text.length;
     }
 
     updateModifierState() {

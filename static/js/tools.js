@@ -3,6 +3,7 @@ class ToolsManager {
         this.initialized = false;
         this.initializeRetries = 0;
         this.maxRetries = 5;
+        this.retryDelay = 1000; // Base delay in ms
         this.tools = [
             {
                 id: 'port-scanner',
@@ -48,7 +49,7 @@ class ToolsManager {
             }
         ];
 
-        // Initialize when DOM is ready
+        // Wait for DOM to be ready before initialization
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.initWithRetry());
         } else {
@@ -64,7 +65,7 @@ class ToolsManager {
             console.warn(`Failed to initialize ToolsManager (attempt ${this.initializeRetries + 1}):`, error);
             if (this.initializeRetries < this.maxRetries) {
                 this.initializeRetries++;
-                setTimeout(() => this.initWithRetry(), 1000 * this.initializeRetries);
+                setTimeout(() => this.initWithRetry(), this.retryDelay * this.initializeRetries);
             } else {
                 console.error('Failed to initialize ToolsManager after maximum retries');
             }
@@ -81,6 +82,7 @@ class ToolsManager {
     async setupElements() {
         return new Promise((resolve) => {
             const setupTools = () => {
+                // Find or create tools menu
                 this.toolsMenu = document.querySelector('.tools-menu');
                 if (!this.toolsMenu) {
                     const container = document.querySelector('.app-container');
@@ -102,12 +104,12 @@ class ToolsManager {
                 this.toolsGrid = this.toolsMenu.querySelector('.tools-grid');
                 this.toolsToggle = this.toolsMenu.querySelector('.tools-toggle');
 
-                if (this.toolsGrid && this.toolsToggle) {
-                    this.renderTools();
-                    resolve();
-                } else {
+                if (!this.toolsGrid || !this.toolsToggle) {
                     throw new Error('Required tools elements not found');
                 }
+
+                this.renderTools();
+                resolve();
             };
 
             try {
