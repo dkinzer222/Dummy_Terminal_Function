@@ -35,12 +35,13 @@ class Terminal {
         this.input.addEventListener('focus', () => {
             if (window.keyboard) {
                 window.keyboard.toggleKeyboard(true);
-                this.input.classList.add('visible');
             }
         });
 
-        this.input.addEventListener('input', () => {
-            this.input.focus();
+        this.input.addEventListener('click', () => {
+            if (window.keyboard) {
+                window.keyboard.toggleKeyboard(true);
+            }
         });
     }
 

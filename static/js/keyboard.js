@@ -37,16 +37,11 @@ class Keyboard {
                     input.value += (key === 'Space' ? ' ' : key);
                 }
         }
-        
-        const progressTab = document.querySelector('#progress-tab .terminal-output');
-        if (progressTab) {
-            progressTab.textContent = input.value;
-        }
     }
 
     setupKeyboard() {
         if (!this.container) return;
-        
+
         const size = this.isLocked ? { width: '100%' } : { width: '80%', left: '10%' };
         Object.assign(this.container.style, size);
 
@@ -82,9 +77,34 @@ class Keyboard {
             lockBtn.innerHTML = this.isLocked ? '🔒' : '🔓';
             this.container.classList.toggle('draggable', !this.isLocked);
             
-            const size = this.isLocked ? { width: '100%', left: '0' } : { width: '80%', left: '10%' };
-            Object.assign(this.container.style, size);
+            if (this.isLocked) {
+                this.container.style.width = '100%';
+                this.container.style.left = '0';
+                this.container.style.bottom = '0';
+                this.container.style.top = 'auto';
+                this.container.style.height = '30vh';
+            } else {
+                this.container.style.width = '80vw';
+                this.container.style.left = '10vw';
+            }
+            
+            // Ensure input field stays connected
+            const input = document.querySelector('.terminal-input');
+            if (input) {
+                input.style.bottom = this.container.style.height;
+            }
         });
+
+        // Add resize observer
+        const resizeObserver = new ResizeObserver(() => {
+            if (!this.isLocked) {
+                const input = document.querySelector('.terminal-input');
+                if (input) {
+                    input.style.bottom = this.container.style.height;
+                }
+            }
+        });
+        resizeObserver.observe(this.container);
 
         const constrainPosition = () => {
             const rect = this.container.getBoundingClientRect();
@@ -106,8 +126,7 @@ class Keyboard {
         };
 
         this.container.addEventListener('mousedown', (e) => {
-            if (this.isLocked) return;
-            if (e.target === lockBtn) return;
+            if (this.isLocked || e.target === lockBtn) return;
             this.isDragging = true;
             this.dragStart = {
                 x: e.clientX - this.container.offsetLeft,
@@ -123,27 +142,6 @@ class Keyboard {
         });
 
         document.addEventListener('mouseup', () => {
-            this.isDragging = false;
-        });
-
-        this.container.addEventListener('touchstart', (e) => {
-            if (this.isLocked) return;
-            this.isDragging = true;
-            this.dragStart = {
-                x: e.touches[0].clientX - this.container.offsetLeft,
-                y: e.touches[0].clientY - this.container.offsetTop
-            };
-        });
-
-        document.addEventListener('touchmove', (e) => {
-            if (!this.isDragging) return;
-            e.preventDefault();
-            this.container.style.left = (e.touches[0].clientX - this.dragStart.x) + 'px';
-            this.container.style.top = (e.touches[0].clientY - this.dragStart.y) + 'px';
-            constrainPosition();
-        });
-
-        document.addEventListener('touchend', () => {
             this.isDragging = false;
         });
     }
@@ -190,7 +188,15 @@ class Keyboard {
             const input = document.querySelector('.terminal-input');
             if (input) {
                 input.classList.toggle('visible', this.isVisible);
-                input.focus();
+                if (this.isVisible) {
+                    input.focus();
+                    if (this.isLocked) {
+                        this.container.style.width = '100%';
+                        this.container.style.left = '0';
+                        this.container.style.bottom = '0';
+                        this.container.style.top = 'auto';
+                    }
+                }
             }
         }
     }

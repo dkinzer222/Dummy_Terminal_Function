@@ -14,6 +14,27 @@
     flex: 1 1 auto;
 }
 
+.matrix-bg {
+    display: none;
+}
+
+#progress-tab .matrix-bg {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.15;
+    z-index: 1;
+}
+
+.matrix-text {
+    color: #00ff00;
+    text-shadow: 0 0 5px #00ff00;
+    font-family: monospace;
+}
+
 .terminal-output {
     flex: 1 1 auto;
     overflow-y: auto;
@@ -30,8 +51,7 @@
     right: 0;
     background-color: rgba(31, 31, 31, 0.95);
     padding: 8px;
-    max-height: 35vh;
-    min-height: 20vh;
+    height: 30vh;
     z-index: 1000;
     display: none;
 }
@@ -44,22 +64,23 @@
     position: absolute;
     width: 80vw;
     left: 10vw;
-    max-height: 40vh;
+    height: 30vh;
     resize: both;
     overflow: auto;
     border: 1px solid rgba(107, 94, 217, 0.2);
 }
 
 .terminal-input {
+    display: flex;
+    align-items: center;
     position: absolute;
-    bottom: 100%;
+    bottom: 30vh;
     left: 0;
     right: 0;
     background-color: rgba(26, 29, 38, 0.95);
     padding: 10px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
     z-index: 1001;
+    border-top: 1px solid rgba(107, 94, 217, 0.2);
 }
 
 .prompt {
