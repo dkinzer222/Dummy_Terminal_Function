@@ -15,6 +15,23 @@ class Terminal {
             'lookup': (args) => this.ipLookup(args)
         };
         
+        // Command metadata for autocompletion
+        this.commandMeta = {
+            'help': { args: [] },
+            'clear': { args: [] },
+            'tools': { args: [] },
+            'scan': { 
+                args: ['<host>'],
+                description: 'Scan ports on specified host'
+            },
+            'lookup': { 
+                args: ['<ip>'],
+                description: 'Lookup information for IP address'
+            }
+        };
+        
+        this.suggestions = [];
+        this.suggestionIndex = -1;
         this.init();
     }
 
@@ -22,6 +39,63 @@ class Terminal {
         this.welcomeMessage();
         this.addEventListeners();
         this.updatePrompt();
+        this.createSuggestionsBox();
+    }
+
+    createSuggestionsBox() {
+        this.suggestionsBox = document.createElement('div');
+        this.suggestionsBox.className = 'suggestions-box';
+        this.suggestionsBox.style.display = 'none';
+        this.terminal.appendChild(this.suggestionsBox);
+    }
+
+    updateSuggestions(input) {
+        const [cmd, ...args] = input.split(' ');
+        let suggestions = [];
+
+        if (args.length === 0) {
+            // Complete command names
+            suggestions = Object.keys(this.commandHandlers)
+                .filter(name => name.startsWith(cmd));
+        } else if (this.commandMeta[cmd]) {
+            // Complete arguments if command exists
+            const meta = this.commandMeta[cmd];
+            if (meta.args && meta.args.length > args.length - 1) {
+                suggestions = [meta.args[args.length - 1]];
+            }
+        }
+
+        this.suggestions = suggestions;
+        this.suggestionIndex = -1;
+        this.showSuggestions();
+    }
+
+    showSuggestions() {
+        if (this.suggestions.length === 0) {
+            this.suggestionsBox.style.display = 'none';
+            return;
+        }
+
+        this.suggestionsBox.innerHTML = this.suggestions
+            .map((s, i) => `<div class="suggestion${i === this.suggestionIndex ? ' selected' : ''}">${s}</div>`)
+            .join('');
+        this.suggestionsBox.style.display = 'block';
+    }
+
+    applySuggestion() {
+        if (this.suggestionIndex === -1 && this.suggestions.length > 0) {
+            this.suggestionIndex = 0;
+        }
+        if (this.suggestionIndex >= 0) {
+            const parts = this.input.value.split(' ');
+            if (parts.length === 1) {
+                this.input.value = this.suggestions[this.suggestionIndex];
+            } else {
+                parts[parts.length - 1] = this.suggestions[this.suggestionIndex];
+                this.input.value = parts.join(' ');
+            }
+        }
+        this.suggestionsBox.style.display = 'none';
     }
 
     updatePrompt() {
@@ -47,7 +121,10 @@ class Terminal {
 
     addEventListeners() {
         this.input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                this.applySuggestion();
+            } else if (e.key === 'Enter') {
                 const command = this.input.value.trim();
                 if (command) {
                     this.executeCommand(command);
@@ -55,6 +132,7 @@ class Terminal {
                     this.historyIndex = this.history.length;
                 }
                 this.input.value = '';
+                this.suggestionsBox.style.display = 'none';
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 if (this.historyIndex > 0) {
@@ -70,6 +148,17 @@ class Terminal {
                     this.historyIndex = this.history.length;
                     this.input.value = '';
                 }
+            }
+        });
+
+        this.input.addEventListener('input', () => {
+            this.updateSuggestions(this.input.value);
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!this.suggestionsBox.contains(e.target)) {
+                this.suggestionsBox.style.display = 'none';
             }
         });
     }
