@@ -3,60 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Network Security Toolkit</title>
+    <title>MobileTerminalInterface</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/terminal.css') }}" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
-        <div class="tools-section">
-            <header>
-                <div class="logo">
-                    <i class='bx bxs-rocket'></i>
-                    Network Security Toolkit
+        <header class="app-header">
+            <div class="header-left">
+                <i class='bx bx-refresh'></i>
+                <span>MobileTerminalInterface</span>
+            </div>
+            <div class="header-right">
+                <i class='bx bx-dots-vertical-rounded'></i>
+            </div>
+        </header>
+
+        <nav class="tab-navigation">
+            <button class="tab-button active" data-tab="progress">Progress</button>
+            <button class="tab-button" data-tab="output">Output</button>
+        </nav>
+
+        <main class="app-content">
+            <div class="tab-content active" id="progress-tab">
+                <div class="terminal-section">
+                    <div class="terminal">
+                        <div class="terminal-output"></div>
+                        <div class="terminal-input">
+                            <span class="prompt">$</span>
+                            <input type="text" class="command-input" autocomplete="off">
+                        </div>
+                    </div>
                 </div>
-                <nav>
-                    <a href="#tools"><i class='bx bxs-grid'></i>Tools</a>
-                    <a href="#terminal"><i class='bx bx-terminal'></i>Terminal</a>
-                </nav>
-            </header>
-
-            <div class="tools-grid">
-                <!-- Tools will be dynamically populated -->
             </div>
-        </div>
-
-        <div class="terminal-section">
-            <div class="terminal">
-                <div class="terminal-output"></div>
-                <div class="terminal-input">
-                    <span class="prompt">$</span>
-                    <input type="text" class="command-input" autocomplete="off">
+            <div class="tab-content" id="output-tab">
+                <div class="output-container">
+                    <!-- Output content will be displayed here -->
                 </div>
             </div>
-        </div>
+        </main>
 
-        <div class="mobile-keyboard">
-            <div class="keyboard-container">
-                <!-- Keyboard will be dynamically generated -->
-            </div>
+        <div class="keyboard-container">
+            <!-- Virtual keyboard will be rendered here -->
         </div>
     </div>
 
-    <div id="theme-switcher" class="theme-switcher">
-        <i class='bx bxs-palette'></i>
-    </div>
-    <div id="theme-popup" class="theme-popup">
-        <div class="theme-option" data-theme="dark">Dark</div>
-        <div class="theme-option" data-theme="light">Light</div>
-        <div class="theme-option" data-theme="christmas">Christmas</div>
-        <div class="theme-option" data-theme="halloween">Halloween</div>
-        <div class="theme-option" data-theme="spring">Spring</div>
-    </div>
-
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script src="{{ url_for('static', filename='js/terminal.js') }}"></script>
     <script src="{{ url_for('static', filename='js/keyboard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tools.js') }}"></script>
