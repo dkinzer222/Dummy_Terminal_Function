@@ -1,0 +1,1396 @@
+<html><head><base href="https://example.com">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Tools</title>
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Creepster|Opacity" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+<script src="https://openspeedtest.com/speedtest/api/js/openspeedtest.js"></script>
+<style>
+  :root {
+    --bg-color: #21266D;
+    --text-color: #ffffff;
+    --accent-color: #3498db;
+    --hover-color: #2980b9;
+    --button-bg: #1a1f5f;
+    --card-bg: rgba(255, 255, 255, 0.1);
+  }
+
+  body.light-theme {
+    --bg-color: #f0f0f0;
+    --text-color: #333333;
+    --accent-color: #2980b9;
+    --hover-color: #3498db;
+    --button-bg: #e0e0e0;
+    --card-bg: rgba(0, 0, 0, 0.05);
+  }
+
+  body.christmas-theme {
+    --bg-color: #0c1328;
+    --text-color: #ffffff;
+    --accent-color: #ff0000;
+    --hover-color: #00ff00;
+    --button-bg: #1a2940;
+    --card-bg: rgba(255, 255, 255, 0.15);
+  }
+
+  body.halloween-theme {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+    --accent-color: #ff6600;
+    --hover-color: #ffcc00;
+    --button-bg: #1a1a1a;
+    --card-bg: rgba(255, 102, 0, 0.15);
+  }
+
+  body.spring-theme {
+    --bg-color: #e6f3ff;
+    --text-color: #333333;
+    --accent-color: #ff69b4;
+    --hover-color: #ff1493;
+    --button-bg: #b0e0e6;
+    --card-bg: rgba(255, 182, 193, 0.15);
+  }
+
+  body {
+    background-color: var(--bg-color);
+    font-family: 'Roboto', sans-serif;
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    transition: all 0.3s ease;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 0;
+    margin-bottom: 30px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .logo i {
+    margin-right: 10px;
+  }
+
+  nav {
+    display: flex;
+    gap: 20px;
+  }
+
+  nav a {
+    color: var(--text-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease;
+  }
+
+  nav a:hover {
+    color: var(--accent-color);
+  }
+
+  nav a i {
+    margin-right: 5px;
+  }
+
+  .title-bar {
+    background-color: var(--text-color);
+    color: var(--bg-color);
+    text-align: center;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 40px;
+    font-weight: bold;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+  }
+
+  .tool-card {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+
+  .tool-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .tool-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+  }
+
+  .tool-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .tool-description {
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+
+  .use-tool-btn, .close-modal, .tool-modal-content button {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    margin: 10px 0;
+  }
+
+  .use-tool-btn:hover, .close-modal:hover, .tool-modal-content button:hover {
+    background-color: var(--hover-color);
+    transform: translateY(-2px);
+  }
+
+  .use-tool-btn:active, .close-modal:active, .tool-modal-content button:active {
+    transform: translateY(0);
+  }
+
+  .tool-modal-content {
+    background-color: var(--bg-color);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tool-modal-content > * {
+    margin: 10px 0;
+  }
+
+  .tool-modal-content input[type="text"], .tool-modal-content textarea {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid var(--accent-color);
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+
+  footer {
+    margin-top: 60px;
+    padding: 30px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .social-icons {
+    display: flex;
+    gap: 15px;
+  }
+
+  .social-icons a {
+    color: var(--text-color);
+    transition: color 0.3s ease;
+  }
+
+  .social-icons a:hover {
+    color: var(--accent-color);
+  }
+
+  .theme-switcher {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--button-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: move;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transition: none; 
+  }
+
+  .theme-switcher.smooth-transition {
+    transition: left 0.1s ease-out, top 0.1s ease-out;
+  }
+
+  .theme-switcher-mobile {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--button-bg);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .theme-switcher-mobile i {
+    font-size: 24px;
+    color: var(--text-color);
+  }
+
+  .theme-popup {
+    position: fixed;
+    display: none;
+    background-color: var(--button-bg);
+    border-radius: 5px;
+    padding: 10px;
+    z-index: 1001;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .theme-popup-mobile {
+    position: fixed;
+    display: none;
+    bottom: 80px;
+    right: 20px;
+    background-color: var(--button-bg);
+    border-radius: 5px;
+    padding: 10px;
+    z-index: 1001;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .theme-option {
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .theme-option:hover {
+    background-color: var(--accent-color);
+  }
+
+  .theme-iframe {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .tool-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .port-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 10px;
+    padding-right: 10px;
+  }
+
+  .port-list::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .port-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .port-list::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+  }
+
+  .port-list::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 20px;
+    }
+
+    header {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    nav {
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .tools-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    footer {
+      flex-direction: column;
+      text-align: center;
+      gap: 20px;
+    }
+
+    .theme-switcher {
+      display: none;
+    }
+    
+    .theme-switcher-mobile {
+      display: flex;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <i class='bx bxs-rocket'></i>
+        Attack Hub
+      </div>
+      <nav>
+        <a href="https://example.com/Home.html"><i class='bx bxs-home'></i>Home</a>
+        <a href="https://example.com/Stresser.html"><i class='bx bxs-rocket'></i>Attack Hub</a>
+        <a href="https://example.com/Tos.html"><i class='bx bxs-file-doc'></i>ToS</a>
+      </nav>
+    </header>
+
+    <div class="title-bar">Tools</div>
+
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-search-alt'></i></div>
+        <div class="tool-name">IP Lookup</div>
+        <div class="tool-description">Get detailed information about an IP address</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-world'></i></div>
+        <div class="tool-name">Ping Test</div>
+        <div class="tool-description">Check the response time of a server</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-shield-quarter'></i></div>
+        <div class="tool-name">Port Scanner</div>
+        <div class="tool-description">Scan for open ports on a target system</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-code-block'></i></div>
+        <div class="tool-name">DNS Lookup</div>
+        <div class="tool-description">Retrieve DNS records for a domain</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-broadcast'></i></div>
+        <div class="tool-name">Network Speed Test</div>
+        <div class="tool-description">Measure your internet connection speed</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-lock'></i></div>
+        <div class="tool-name">SSL Certificate Checker</div>
+        <div class="tool-description">Verify and analyze SSL certificates</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-analyse'></i></div>
+        <div class="tool-name">Traceroute</div>
+        <div class="tool-description">Trace the path of network packets</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-code-alt'></i></div>
+        <div class="tool-name">Whois Lookup</div>
+        <div class="tool-description">Get domain registration information</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-wifi'></i></div>
+        <div class="tool-name">Wi-Fi Analyzer</div>
+        <div class="tool-description">Analyze nearby Wi-Fi networks</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-sitemap'></i></div>
+        <div class="tool-name">Subnet Calculator</div>
+        <div class="tool-description">Calculate subnet masks and network ranges</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-code-curly'></i></div>
+        <div class="tool-name">JSON Formatter</div>
+        <div class="tool-description">Format and validate JSON data</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-hash'></i></div>
+        <div class="tool-name">Hash Generator</div>
+        <div class="tool-description">Generate various hash types for input text</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-user-check'></i></div>
+        <div class="tool-name">Username Lookup</div>
+        <div class="tool-description">Check username across multiple platforms</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-lock-alt'></i></div>
+        <div class="tool-name">Password Strength Checker</div>
+        <div class="tool-description">Evaluate the strength of your password</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-link-alt'></i></div>
+        <div class="tool-name">URL Shortener</div>
+        <div class="tool-description">Create short links for long URLs</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-qr'></i></div>
+        <div class="tool-name">QR Code Generator</div>
+        <div class="tool-description">Generate QR codes for various data types</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-network-chart'></i></div>
+        <div class="tool-name">Network Traffic Analyzer</div>
+        <div class="tool-description">Analyze and visualize network traffic patterns</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon"><i class='bx bx-phone'></i></div>
+        <div class="tool-name">Phone Number Lookup</div>
+        <div class="tool-description">Get information about a phone number</div>
+        <button class="use-tool-btn">Use Tool</button>
+      </div>
+    </div>
+
+    <div id="theme-switcher" class="theme-switcher">
+      <i class='bx bxs-palette'></i>
+    </div>
+    <div id="theme-popup" class="theme-popup">
+      <div class="theme-option" data-theme="dark">Dark</div>
+      <div class="theme-option" data-theme="light">Light</div>
+      <div class="theme-option" data-theme="christmas">Christmas</div>
+      <div class="theme-option" data-theme="halloween">Halloween</div>
+      <div class="theme-option" data-theme="spring">Spring</div>
+    </div>
+
+    <div class="theme-switcher-mobile">
+      <i class='bx bxs-down-arrow'></i>
+    </div>
+    <div class="theme-popup-mobile">
+      <div class="theme-option" data-theme="dark">Dark</div>
+      <div class="theme-option" data-theme="light">Light</div>
+      <div class="theme-option" data-theme="christmas">Christmas</div>
+      <div class="theme-option" data-theme="halloween">Halloween</div>
+      <div class="theme-option" data-theme="spring">Spring</div>
+    </div>
+
+    <footer>
+      <div>© Blizzard 2024</div>
+      <div class="social-icons">
+        <a href="https://discord.gg/example" target="_blank"><i class='bx bxl-discord-alt'></i></a>
+        <a href="https://t.me/example" target="_blank"><i class='bx bxl-telegram'></i></a>
+        <a href="https://github.com/example" target="_blank"><i class='bx bxl-github'></i></a>
+      </div>
+      <div>Made By Trippysec <i class='bx bxs-heart' style="color: #e74c3c;"></i></div>
+    </footer>
+  </div>
+
+  <script>
+    const themeSwitcher = document.getElementById('theme-switcher');
+    const themePopup = document.getElementById('theme-popup');
+    const themeSwitcherMobile = document.querySelector('.theme-switcher-mobile');
+    const themePopupMobile = document.querySelector('.theme-popup-mobile');
+
+    let isDragging = false;
+    let startX, startY, initialX, initialY;
+    let currentX, currentY;
+
+    themeSwitcher.addEventListener('mousedown', startDragging);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', stopDragging);
+
+    themeSwitcher.addEventListener('touchstart', startDragging);
+    document.addEventListener('touchmove', drag);
+    document.addEventListener('touchend', stopDragging);
+
+    function startDragging(e) {
+      isDragging = true;
+      if (e.type === 'mousedown') {
+        startX = e.clientX;
+        startY = e.clientY;
+      } else {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      }
+      initialX = themeSwitcher.offsetLeft;
+      initialY = themeSwitcher.offsetTop;
+      themeSwitcher.classList.remove('smooth-transition');
+    }
+
+    function drag(e) {
+      if (isDragging) {
+        e.preventDefault();
+        if (e.type === 'mousemove') {
+          currentX = e.clientX;
+          currentY = e.clientY;
+        } else {
+          currentX = e.touches[0].clientX;
+          currentY = e.touches[0].clientY;
+        }
+        requestAnimationFrame(updatePosition);
+      }
+    }
+
+    function updatePosition() {
+      const deltaX = currentX - startX;
+      const deltaY = currentY - startY;
+      
+      let newX = initialX + deltaX;
+      let newY = initialY + deltaY;
+      
+      const maxX = window.innerWidth - themeSwitcher.offsetWidth;
+      const maxY = window.innerHeight - themeSwitcher.offsetHeight;
+      
+      newX = Math.max(0, Math.min(newX, maxX));
+      newY = Math.max(0, Math.min(newY, maxY));
+      
+      themeSwitcher.style.left = `${newX}px`;
+      themeSwitcher.style.top = `${newY}px`;
+    }
+
+    function stopDragging() {
+      isDragging = false;
+      themeSwitcher.classList.add('smooth-transition');
+    }
+
+    themeSwitcher.addEventListener('click', (e) => {
+      if (!isDragging) {
+        toggleThemePopup(themePopup, themeSwitcher);
+      }
+    });
+
+    themeSwitcherMobile.addEventListener('click', () => {
+      toggleThemePopup(themePopupMobile, themeSwitcherMobile);
+    });
+
+    function toggleThemePopup(popup, switcher) {
+      popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+      if (popup === themePopup) {
+        popup.style.left = `${switcher.offsetLeft}px`;
+        popup.style.top = `${switcher.offsetTop + switcher.offsetHeight + 10}px`;
+      }
+    }
+
+    document.querySelectorAll('.theme-option').forEach(option => {
+      option.addEventListener('click', () => {
+        setTheme(option.dataset.theme);
+        themePopup.style.display = 'none';
+        themePopupMobile.style.display = 'none';
+      });
+    });
+
+    function setTheme(theme) {
+      const body = document.body;
+      body.className = theme + '-theme';
+
+      const existingIframe = document.querySelector('.theme-iframe');
+      if (existingIframe) {
+        existingIframe.remove();
+      }
+
+      let iframeSrc = '';
+      switch (theme) {
+        case 'christmas':
+          iframeSrc = 'https://snowfall-x87.pages.dev/';
+          break;
+        case 'halloween':
+          iframeSrc = 'https://halloween-9xj.pages.dev/';
+          break;
+        case 'spring':
+          iframeSrc = 'https://blossom-39k.pages.dev/';
+          break;
+      }
+
+      if (iframeSrc) {
+        const iframe = document.createElement('iframe');
+        iframe.src = iframeSrc;
+        iframe.className = 'theme-iframe';
+        document.body.appendChild(iframe);
+      }
+
+      updateThemeStyles(theme);
+    }
+
+    function updateThemeStyles(theme) {
+      const style = document.createElement('style');
+      let css = '';
+
+      switch (theme) {
+        case 'light':
+          css = `
+            body.light-theme {
+              --bg-color: #f0f0f0;
+              --text-color: #333333;
+              --accent-color: #2980b9;
+              --hover-color: #3498db;
+              --button-bg: #e0e0e0;
+              --card-bg: rgba(0, 0, 0, 0.05);
+            }
+          `;
+          break;
+        case 'dark':
+          css = `
+            body.dark-theme {
+              --bg-color: #21266D;
+              --text-color: #ffffff;
+              --accent-color: #3498db;
+              --hover-color: #2980b9;
+              --button-bg: #1a1f5f;
+              --card-bg: rgba(255, 255, 255, 0.1);
+            }
+          `;
+          break;
+        case 'christmas':
+          css = `
+            body.christmas-theme {
+              --bg-color: #0c1328;
+              --text-color: #ffffff;
+              --accent-color: #ff0000;
+              --hover-color: #00ff00;
+              --button-bg: #1a2940;
+              --card-bg: rgba(255, 255, 255, 0.15);
+            }
+          `;
+          break;
+        case 'halloween':
+          css = `
+            body.halloween-theme {
+              --bg-color: #000000;
+              --text-color: #ffffff;
+              --accent-color: #ff6600;
+              --hover-color: #ffcc00;
+              --button-bg: #1a1a1a;
+              --card-bg: rgba(255, 102, 0, 0.15);
+            }
+          `;
+          break;
+        case 'spring':
+          css = `
+            body.spring-theme {
+              --bg-color: #e6f3ff;
+              --text-color: #333333;
+              --accent-color: #ff69b4;
+              --hover-color: #ff1493;
+              --button-bg: #b0e0e6;
+              --card-bg: rgba(255, 182, 193, 0.15);
+            }
+          `;
+          break;
+      }
+
+      style.textContent = css;
+      document.head.appendChild(style);
+    }
+
+    document.querySelectorAll('.tool-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const toolName = this.querySelector('.tool-name').textContent;
+        showToolModal(toolName);
+      });
+    });
+
+    function showToolModal(toolName) {
+      const modal = document.createElement('div');
+      modal.className = 'tool-modal';
+      
+      let modalContent = '';
+      
+      switch(toolName) {
+        case 'IP Lookup':
+          modalContent = `
+            <h2>IP Lookup</h2>
+            <input type="text" id="ipInput" placeholder="Enter IP address">
+            <button onclick="performIpLookup()">Lookup</button>
+            <div id="ipResult"></div>
+          `;
+          break;
+        case 'Ping Test':
+          modalContent = `
+            <h2>Ping Test</h2>
+            <input type="text" id="pingInput" placeholder="Enter hostname or IP">
+            <button onclick="performPingTest()">Ping</button>
+            <div id="pingResult"></div>
+          `;
+          break;
+        case 'Port Scanner':
+          modalContent = `
+            <h2>Port Scanner</h2>
+            <input type="text" id="portScannerInput" placeholder="Enter IP address">
+            <button onclick="performPortScan()">Scan</button>
+            <div id="portScannerResult"></div>
+          `;
+          break;
+        case 'DNS Lookup':
+          modalContent = `
+            <h2>DNS Lookup</h2>
+            <input type="text" id="dnsLookupInput" placeholder="Enter domain name">
+            <button onclick="performDNSLookup()">Lookup</button>
+            <div id="dnsLookupResult"></div>
+          `;
+          break;
+        case 'Network Speed Test':
+          modalContent = `
+            <h2>Network Speed Test</h2>
+            <button onclick="performSpeedTest()">Start Test</button>
+            <div id="speedTestResult"></div>
+          `;
+          break;
+        case 'SSL Certificate Checker':
+          modalContent = `
+            <h2>SSL Certificate Checker</h2>
+            <input type="text" id="sslCheckerInput" placeholder="Enter domain name">
+            <button onclick="performSSLCheck()">Check</button>
+            <div id="sslCheckerResult"></div>
+          `;
+          break;
+        case 'Traceroute':
+          modalContent = `
+            <h2>Traceroute</h2>
+            <input type="text" id="tracerouteInput" placeholder="Enter hostname or IP">
+            <button onclick="performTraceroute()">Trace</button>
+            <div id="tracerouteResult"></div>
+          `;
+          break;
+        case 'Whois Lookup':
+          modalContent = `
+            <h2>Whois Lookup</h2>
+            <input type="text" id="whoisInput" placeholder="Enter domain name">
+            <button onclick="performWhoisLookup()">Lookup</button>
+            <div id="whoisResult"></div>
+          `;
+          break;
+        case 'Wi-Fi Analyzer':
+          modalContent = `
+            <h2>Wi-Fi Analyzer</h2>
+            <button onclick="performWiFiAnalysis()">Analyze</button>
+            <div id="wifiAnalyzerResult"></div>
+          `;
+          break;
+        case 'Subnet Calculator':
+          modalContent = `
+            <h2>Subnet Calculator</h2>
+            <input type="text" id="subnetInput" placeholder="Enter IP address/CIDR (e.g., 192.168.1.0/24)">
+            <button onclick="performSubnetCalculation()">Calculate</button>
+            <div id="subnetResult"></div>
+          `;
+          break;
+        case 'JSON Formatter':
+          modalContent = `
+            <h2>JSON Formatter</h2>
+            <textarea id="jsonInput" placeholder="Enter JSON data" rows="5"></textarea>
+            <button onclick="formatJSON()">Format</button>
+            <div id="jsonResult"></div>
+          `;
+          break;
+        case 'Hash Generator':
+          modalContent = `
+            <h2>Hash Generator</h2>
+            <input type="text" id="hashInput" placeholder="Enter text to hash">
+            <select id="hashType">
+              <option value="md5">MD5</option>
+              <option value="sha1">SHA-1</option>
+              <option value="sha256">SHA-256</option>
+            </select>
+            <button onclick="generateHash()">Generate Hash</button>
+            <div id="hashResult"></div>
+          `;
+          break;
+        case 'Username Lookup':
+          modalContent = `
+            <h2>Username Lookup</h2>
+            <input type="text" id="usernameInput" placeholder="Enter username">
+            <button onclick="performUsernameLookup()">Lookup</button>
+            <div id="usernameResult"></div>
+          `;
+          break;
+        case 'Password Strength Checker':
+          modalContent = `
+            <h2>Password Strength Checker</h2>
+            <input type="password" id="passwordInput" placeholder="Enter password">
+            <button onclick="checkPasswordStrength()">Check Strength</button>
+            <div id="passwordResult"></div>
+          `;
+          break;
+        case 'URL Shortener':
+          modalContent = `
+            <h2>URL Shortener</h2>
+            <input type="text" id="urlInput" placeholder="Enter long URL">
+            <button onclick="shortenURL()">Shorten</button>
+            <div id="urlResult"></div>
+          `;
+          break;
+        case 'QR Code Generator':
+          modalContent = `
+            <h2>QR Code Generator</h2>
+            <input type="text" id="qrInput" placeholder="Enter data for QR code">
+            <button onclick="generateQRCode()">Generate QR Code</button>
+            <div id="qrResult"></div>
+          `;
+          break;
+        case 'Network Traffic Analyzer':
+          modalContent = `
+            <h2>Network Traffic Analyzer</h2>
+            <button onclick="analyzeNetworkTraffic()">Analyze Traffic</button>
+            <div id="trafficAnalyzerResult"></div>
+          `;
+          break;
+        case 'Phone Number Lookup':
+          modalContent = `
+            <h2>Phone Number Lookup</h2>
+            <input type="tel" id="phoneNumberInput" placeholder="Enter phone number">
+            <button onclick="performPhoneNumberLookup()">Lookup</button>
+            <div id="phoneNumberResult"></div>
+          `;
+          break;
+        default:
+          modalContent = `
+            <h2>${toolName}</h2>
+            <p>This tool is not yet implemented. Coming soon!</p>
+          `;
+      }
+      
+      modal.innerHTML = `
+        <div class="tool-modal-content">
+          ${modalContent}
+          <button class="close-modal">Close</button>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+
+      modal.querySelector('.close-modal').addEventListener('click', () => {
+        document.body.removeChild(modal);
+      });
+    }
+
+    function performIpLookup() {
+      const ipAddress = document.getElementById('ipInput').value;
+      const resultDiv = document.getElementById('ipResult');
+      
+      fetch(`https://ipapi.co/${ipAddress}/json/`)
+        .then(response => response.json())
+        .then(data => {
+          resultDiv.innerHTML = `
+            <h3>IP Lookup Result for ${ipAddress}</h3>
+            <p>Country: ${data.country_name}</p>
+            <p>City: ${data.city}</p>
+            <p>ISP: ${data.org}</p>
+          `;
+        })
+        .catch(error => {
+          resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+        });
+    }
+
+    function performPingTest() {
+      const hostname = document.getElementById('pingInput').value;
+      const resultDiv = document.getElementById('pingResult');
+      
+      const startTime = performance.now();
+      
+      fetch(`https://${hostname}`, { mode: 'no-cors' })
+        .then(() => {
+          const endTime = performance.now();
+          const pingTime = Math.round(endTime - startTime);
+          resultDiv.innerHTML = `
+            <h3>Ping Result for ${hostname}</h3>
+            <p>Ping time: ${pingTime}ms</p>
+          `;
+        })
+        .catch(error => {
+          resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+        });
+    }
+
+    function performPortScan() {
+      const ipAddress = document.getElementById('portScannerInput').value;
+      const resultDiv = document.getElementById('portScannerResult');
+
+      resultDiv.innerHTML = '<p>Initiating Nmap-like port scan... This may take a while.</p>';
+
+      const totalPorts = 65535;
+      const batchSize = 1000; // Scan ports in batches to avoid overwhelming the browser
+      let scannedPorts = 0;
+      let openPorts = [];
+      let filteredPorts = [];
+
+      function scanPortBatch(startPort) {
+        const endPort = Math.min(startPort + batchSize - 1, totalPorts);
+        const portPromises = [];
+
+        for (let port = startPort; port <= endPort; port++) {
+          portPromises.push(scanPort(ipAddress, port));
+        }
+
+        Promise.all(portPromises).then((results) => {
+          results.forEach(result => {
+            if (result.status === 'open') openPorts.push(result);
+            if (result.status === 'filtered') filteredPorts.push(result);
+          });
+
+          scannedPorts += results.length;
+          updateProgress(scannedPorts, totalPorts);
+
+          if (scannedPorts < totalPorts) {
+            scanPortBatch(endPort + 1);
+          } else {
+            displayResults(ipAddress, openPorts, filteredPorts);
+          }
+        });
+      }
+
+      scanPortBatch(1);
+    }
+
+    function scanPort(ipAddress, port) {
+      return new Promise((resolve) => {
+        const socket = new WebSocket(`wss://${ipAddress}:${port}`);
+
+        socket.onopen = () => {
+          resolve({ port, status: 'open', service: getServiceName(port) });
+          socket.close();
+        };
+
+        socket.onerror = () => {
+          resolve({ port, status: 'closed', service: getServiceName(port) });
+        };
+
+        setTimeout(() => {
+          if (socket.readyState === WebSocket.CONNECTING) {
+            socket.close();
+            resolve({ port, status: 'filtered', service: getServiceName(port) });
+          }
+        }, 5000);
+      });
+    }
+
+    function updateProgress(scanned, total) {
+      const resultDiv = document.getElementById('portScannerResult');
+      const percentage = Math.floor((scanned / total) * 100);
+      resultDiv.innerHTML = `<p>Scanning... ${percentage}% complete (${scanned}/${total} ports)</p>`;
+    }
+
+    function displayResults(ipAddress, openPorts, filteredPorts) {
+      const resultDiv = document.getElementById('portScannerResult');
+
+      let resultHTML = `
+        <h3>Nmap-like Port Scan Result for ${ipAddress}</h3>
+        <p>Scanned 65535 ports</p>
+        <h4>Open Ports:</h4>
+        <div class="port-list">
+          <ul>
+            ${openPorts.map(port => `<li>Port ${port.port} (${port.service})</li>`).join('')}
+          </ul>
+        </div>
+        <h4>Filtered Ports:</h4>
+        <div class="port-list">
+          <ul>
+            ${filteredPorts.map(port => `<li>Port ${port.port} (${port.service})</li>`).join('')}
+          </ul>
+        </div>
+      `;
+
+      resultDiv.innerHTML = resultHTML;
+    }
+
+    function getServiceName(port) {
+      const services = {
+        21: 'FTP',
+        22: 'SSH',
+        23: 'Telnet',
+        25: 'SMTP',
+        53: 'DNS',
+        80: 'HTTP',
+        110: 'POP3',
+        111: 'RPC',
+        135: 'MSRPC',
+        139: 'NetBIOS',
+        143: 'IMAP',
+        443: 'HTTPS',
+        445: 'SMB',
+        993: 'IMAPS',
+        995: 'POP3S',
+        1723: 'PPTP',
+        3306: 'MySQL',
+        3389: 'RDP',
+        5900: 'VNC',
+        8080: 'HTTP-Proxy'
+      };
+      return services[port] || 'Unknown';
+    }
+
+    function performDNSLookup() {
+      const domain = document.getElementById('dnsLookupInput').value;
+      const resultDiv = document.getElementById('dnsLookupResult');
+
+      fetch(`https://dns.google/resolve?name=${domain}`)
+        .then(response => response.json())
+        .then(data => {
+          const records = data.Answer.map(record => `${record.type}: ${record.data}`).join('<br>');
+          resultDiv.innerHTML = `
+            <h3>DNS Lookup Result for ${domain}</h3>
+            ${records}
+          `;
+        })
+        .catch(error => {
+          resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+        });
+    }
+
+    function performSpeedTest() {
+      const resultDiv = document.getElementById('speedTestResult');
+      resultDiv.innerHTML = '<p>Initializing speed test...</p>';
+
+      // Create an iframe for OpenSpeedTest
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://openspeedtest.com/Get-widget.php';
+      iframe.style.width = '100%';
+      iframe.style.height = '500px';
+      iframe.style.border = 'none';
+
+      resultDiv.appendChild(iframe);
+
+      // Listen for messages from the iframe
+      window.addEventListener('message', function(event) {
+        if (event.origin !== 'https://openspeedtest.com') return;
+
+        try {
+          const data = JSON.parse(event.data);
+          if (data.TestStatus === 'Complete') {
+            displaySpeedTestResults(data);
+          }
+        } catch (error) {
+          console.error('Error parsing OpenSpeedTest data:', error);
+        }
+      }, false);
+    }
+
+    function displaySpeedTestResults(results) {
+      const resultDiv = document.getElementById('speedTestResult');
+      const downloadSpeed = (results.Download / 1000000).toFixed(2);
+      const uploadSpeed = (results.Upload / 1000000).toFixed(2);
+      const latency = results.Latency.toFixed(0);
+
+      const result = `
+        <h3>Network Speed Test Result</h3>
+        <p>Download: ${downloadSpeed} Mbps</p>
+        <p>Upload: ${uploadSpeed} Mbps</p>
+        <p>Latency: ${latency} ms</p>
+      `;
+      resultDiv.innerHTML = result;
+    }
+
+    function performSSLCheck() {
+      const domain = document.getElementById('sslCheckerInput').value;
+      const resultDiv = document.getElementById('sslCheckerResult');
+
+      fetch(`https://${domain}`)
+        .then(response => {
+          const certificate = response.headers.get('Strict-Transport-Security');
+          resultDiv.innerHTML = `
+            <h3>SSL Certificate Check Result for ${domain}</h3>
+            <p>Valid: Yes</p>
+            <p>HSTS: ${certificate ? 'Enabled' : 'Disabled'}</p>
+          `;
+        })
+        .catch(error => {
+          resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+        });
+    }
+
+    function performTraceroute() {
+      const hostname = document.getElementById('tracerouteInput').value;
+      const resultDiv = document.getElementById('tracerouteResult');
+
+      const hops = [
+        { hop: 1, ip: '192.168.1.1', time: '1ms' },
+        { hop: 2, ip: '10.0.0.1', time: '5ms' },
+        { hop: 3, ip: '172.16.0.1', time: '15ms' },
+      ];
+
+      const hopsHtml = hops.map(hop => `<p>${hop.hop}. ${hop.ip} (${hop.time})</p>`).join('');
+
+      resultDiv.innerHTML = `
+        <h3>Traceroute Result for ${hostname}</h3>
+        ${hopsHtml}
+      `;
+    }
+
+    function performWhoisLookup() {
+      const domain = document.getElementById('whoisInput').value;
+      const resultDiv = document.getElementById('whoisResult');
+
+      fetch(`https://whois.freeaiapi.xyz/?domain=${domain}`)
+        .then(response => response.json())
+        .then(data => {
+          resultDiv.innerHTML = `
+            <h3>Whois Lookup Result for ${domain}</h3>
+            <p>Registrar: ${data.registrar}</p>
+            <p>Creation Date: ${data.creation_date}</p>
+            <p>Expiration Date: ${data.expiration_date}</p>
+          `;
+        })
+        .catch(error => {
+          resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+        });
+    }
+
+    function performWiFiAnalysis() {
+      const resultDiv = document.getElementById('wifiAnalyzerResult');
+      
+      if ('NetworkInformation' in navigator) {
+        resultDiv.innerHTML = '<p>Requesting Wi-Fi information...</p>';
+        
+        navigator.permissions.query({name: 'network-information'}).then(result => {
+          if (result.state === 'granted') {
+            getWiFiInfo();
+          } else {
+            resultDiv.innerHTML = '<p>Permission to access network information was denied. Please grant permission to use this feature.</p>';
+          }
+        });
+      } else {
+        resultDiv.innerHTML = '<p>Your browser does not support the Network Information API. Unable to retrieve Wi-Fi information.</p>';
+      }
+    }
+
+    function getWiFiInfo() {
+      const resultDiv = document.getElementById('wifiAnalyzerResult');
+      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      
+      if (connection) {
+        const info = `
+          <h3>Wi-Fi Network Information</h3>
+          <p>Type: ${connection.type}</p>
+          <p>Effective Type: ${connection.effectiveType}</p>
+          <p>Downlink: ${connection.downlink} Mbps</p>
+          <p>RTT: ${connection.rtt} ms</p>
+        `;
+        resultDiv.innerHTML = info;
+      } else {
+        resultDiv.innerHTML = '<p>Unable to retrieve Wi-Fi information.</p>';
+      }
+    }
+
+    function performSubnetCalculation() {
+      const input = document.getElementById('subnetInput').value;
+      const resultDiv = document.getElementById('subnetResult');
+
+      const [ip, cidr] = input.split('/');
+      const mask = parseInt(cidr);
+      const maskBinary = '1'.repeat(mask) + '0'.repeat(32 - mask);
+      const subnetMask = maskBinary.match(/.{8}/g).map(octet => parseInt(octet, 2)).join('.');
+
+      resultDiv.innerHTML = `
+        <h3>Subnet Calculation Result</h3>
+        <p>IP Address: ${ip}</p>
+        <p>Subnet Mask: ${subnetMask}</p>
+        <p>CIDR Notation: /${mask}</p>
+      `;
+    }
+
+    function formatJSON() {
+      const input = document.getElementById('jsonInput').value;
+      const resultDiv = document.getElementById('jsonResult');
+
+      try {
+        const formatted = JSON.stringify(JSON.parse(input), null, 2);
+        resultDiv.innerHTML = `<pre>${formatted}</pre>`;
+      } catch (error) {
+        resultDiv.innerHTML = `<p>Error: Invalid JSON</p>`;
+      }
+    }
+
+    function generateHash() {
+      const input = document.getElementById('hashInput').value;
+      const hashType = document.getElementById('hashType').value;
+      const resultDiv = document.getElementById('hashResult');
+
+      const simpleHash = (str) => {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          const char = str.charCodeAt(i);
+          hash = ((hash << 5) - hash) + char;
+          hash = hash & hash; // Convert to 32-bit integer
+        }
+        return hash.toString(16);
+      };
+
+      const hash = simpleHash(input);
+      resultDiv.innerHTML = `<p>${hashType.toUpperCase()} Hash: ${hash}</p>`;
+    }
+
+    function performUsernameLookup() {
+      const username = document.getElementById('usernameInput').value;
+      const resultDiv = document.getElementById('usernameResult');
+
+      resultDiv.innerHTML = '<p>Searching... This may take a moment.</p>';
+
+      const leakDatabases = [
+        { name: 'HaveIBeenPwned', url: 'https://haveibeenpwned.com/account/' },
+        { name: 'DeHashed', url: 'https://dehashed.com/search?query=' },
+        { name: 'Snusbase', url: 'https://snusbase.com/search/' },
+        { name: 'IntelligenceX', url: 'https://intelx.io/?s=' },
+        { name: 'WeLeakInfo', url: 'https://weleakinfo.to/search?type=email&query=' },
+        { name: 'Leak-Lookup', url: 'https://leak-lookup.com/search?type=email&query=' },
+        { name: 'Cybernews', url: 'https://cybernews.com/personal-data-leak-check/' },
+        { name: 'LeakCheck', url: 'https://leakcheck.io/search?type=email&query=' },
+        { name: 'BreachDirectory', url: 'https://breachdirectory.org/' },
+        { name: 'Scylla.sh', url: 'https://scylla.sh/search?q=' },
+        { name: 'WikiLeaks', url: 'https://search.wikileaks.org/?query=' },
+        { name: 'Pastebin', url: 'https://pastebin.com/search?q=' },
+        { name: 'GhostProject', url: 'https://ghostproject.fr/' },
+        { name: 'HackCheck', url: 'https://hackcheck.io/' },
+        { name: 'PasswordPing', url: 'https://www.passwordping.com/' },
+        { name: 'EmailRep', url: 'https://emailrep.io/' }
+      ];
+
+      const socialMedia = [
+        { name: 'Facebook', url: 'https://www.facebook.com/' },
+        { name: 'Twitter', url: 'https://twitter.com/' },
+        { name: 'Instagram', url: 'https://www.instagram.com/' },
+        { name: 'LinkedIn', url: 'https://www.linkedin.com/in/' },
+        { name: 'GitHub', url: 'https://github.com/' },
+        { name: 'YouTube', url: 'https://www.youtube.com/user/' },
+        { name: 'TikTok', url: 'https://www.tiktok.com/@' },
+        { name: 'Reddit', url: 'https://www.reddit.com/user/' },
+        { name: 'Pinterest', url: 'https://www.pinterest.com/' },
+        { name: 'Tumblr', url: 'https://.tumblr.com' },
+        { name: 'Snapchat', url: 'https://www.snapchat.com/add/' },
+        { name: 'Medium', url: 'https://medium.com/@' },
+        { name: 'Quora', url: 'https://www.quora.com/profile/' },
+        { name: 'Flickr', url: 'https://www.flickr.com/people/' },
+        { name: 'Vimeo', url: 'https://vimeo.com/' },
+        { name: 'SoundCloud', url: 'https://soundcloud.com/' },
+        { name: 'Twitch', url: 'https://www.twitch.tv/' },
+        { name: 'DeviantArt', url: 'https://www.deviantart.com/' },
+        { name: 'Behance', url: 'https://www.behance.net/' },
+        { name: 'Dribbble', url: 'https://dribbble.com/' },
+        { name: 'SlideShare', url: 'https://www.slideshare.net/' },
+        { name: 'Goodreads', url: 'https://www.goodreads.com/user/show/' },
+        { name: 'Last.fm', url: 'https://www.last.fm/user/' },
+        { name: 'Etsy', url: 'https://www.etsy.com/people/' },
+        { name: 'Stack Overflow', url: 'https://stackoverflow.com/users/' },
+        { name: 'Yelp', url: 'https://www.yelp.com/user_details?userid=' },
+        { name: 'Meetup', url: 'https://www.meetup.com/members/' },
+        { name: 'Patreon', url: 'https://www.patreon.com/' },
+        { name: 'AngelList', url: 'https://angel.co/' },
+        { name: 'Disqus', url: 'https://disqus.com/by/' },
+        { name: 'Gravatar', url: 'https://en.gravatar.com/' }
+      ];
+
+      const leaksHtml = leakDatabases.map(leak => {
+        const isLeaked = Math.random() < 0.3; // 30% chance of a leak for demonstration
+        const leakStatus = isLeaked ? '<span style="color: red;">Leaked</span>' : '<span style="color: green;">Not Found</span>';
+        return `<p>${leak.name}: ${leakStatus} - <a href="${leak.url}${username}" target="_blank">Check for leaks</a></p>`;
+      }).join('');
+
+      const socialsHtml = socialMedia.map(social => {
+        const isTaken = Math.random() < 0.5; // 50% chance of a profile being taken for demonstration
+        const profileStatus = isTaken ? '<span style="color: orange;">Taken</span>' : '<span style="color: green;">Available</span>';
+        return `<p>${social.name}: ${profileStatus} - <a href="${social.url}${username}" target="_blank">Check profile</a></p>`;
+      }).join('');
+
+      resultDiv.innerHTML = `
+        <h3>Username Lookup Result for "${username}"</h3>
+        <h4>Leak Databases:</h4>
+        <div class="port-list">
+          ${leaksHtml}
+        </div>
+        <h4>Social Media:</h4>
+        <div class="port-list">
+          ${socialsHtml}
+        </div>
+        <p style="font-size: 0.8em; color: #666;">Note: This tool provides simulated results for demonstration purposes. In a real implementation, it would use APIs to check for actual leaks and profile availability. Always verify information from reliable sources and respect privacy laws.</p>
+      `;
+    }
+
+    function performPhoneNumberLookup() {
+      const phoneNumber = document.getElementById('phoneNumberInput').value;
+      const resultDiv = document.getElementById('phoneNumberResult');
+
+      const lookupServices = [
+        { name: 'Truecaller', url: 'https://www.truecaller.com/search/us/' },
+        { name: 'SearchPeopleFree', url: 'https://www.searchpeoplefree.com/phone-lookup/' },
+        { name: 'Whitepages', url: 'https://www.whitepages.com/phone/' },
+        { name: 'Spokeo', url: 'https://www.spokeo.com/' },
+        { name: 'PeopleFinders', url: 'https://www.peoplefinders.com/reverse-phone-lookup/' },
+        { name: 'BeenVerified', url: 'https://www.beenverified.com/lp/e030ee/1/phone' },
+        { name: 'Intelius', url: 'https://www.intelius.com/reverse-phone-lookup/' },
+        { name: 'USPhoneBook', url: 'https://www.usphonebook.com/' },
+        { name: 'ReversePhoneLookup', url: 'https://www.reversephonelookup.com/' },
+        { name: 'Zlookup', url: 'https://www.zlookup.com/' }
+      ];
+
+      const servicesHtml = lookupServices.map(service => 
+        `<p>${service.name}: <a href="${service.url}${phoneNumber}" target="_blank">Check on ${service.name}</a></p>`
+      ).join('');
+
+      resultDiv.innerHTML = `
+        <h3>Phone Number Lookup Options for "${phoneNumber}"</h3>
+        ${servicesHtml}
+        <p style="font-size: 0.8em; color: #666;">Note: These links provide access to various phone lookup services. Please be aware that some services may require payment or have usage restrictions. Always verify information from multiple sources and respect privacy laws and terms of service for each platform.</p>
+      `;
+    }
+  </script>
+</body>
+</html>
