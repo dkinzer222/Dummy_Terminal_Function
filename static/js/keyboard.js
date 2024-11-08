@@ -1,10 +1,11 @@
 class VirtualKeyboard {
     constructor() {
-        this.container = document.querySelector('.keyboard-container');
-        this.input = document.querySelector('.command-input');
-        this.terminal = document.querySelector('.terminal');
+        this.container = null;
+        this.input = null;
+        this.terminal = null;
         this.isCollapsed = true;
         this.showSpecialKeys = false;
+        this.isVisible = false;
         
         // Main keyboard layout
         this.mainLayout = [
@@ -24,14 +25,33 @@ class VirtualKeyboard {
 
         this.isShift = false;
         this.isCaps = false;
-        this.init();
+        
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
+            this.init();
+        }
     }
 
     init() {
+        this.setupElements();
         this.createKeyboardContainer();
         this.createKeyboardToggle();
         this.render();
         this.addEventListeners();
+    }
+
+    setupElements() {
+        this.container = document.querySelector('.keyboard-container');
+        this.input = document.querySelector('.command-input');
+        this.terminal = document.querySelector('.terminal');
+        
+        if (!this.container || !this.input || !this.terminal) {
+            console.warn('Some keyboard elements not found, retrying...');
+            setTimeout(() => this.setupElements(), 500);
+            return;
+        }
     }
 
     createKeyboardContainer() {
@@ -61,11 +81,18 @@ class VirtualKeyboard {
     }
 
     createKeyboardToggle() {
-        const toggle = document.createElement('button');
-        toggle.className = 'keyboard-toggle';
-        toggle.innerHTML = '<i class="bx bx-chevron-up"></i> Keyboard';
-        toggle.onclick = () => this.toggleKeyboard();
-        document.body.appendChild(toggle);
+        let toggle = document.querySelector('.keyboard-toggle');
+        if (!toggle) {
+            toggle = document.createElement('button');
+            toggle.className = 'keyboard-toggle';
+            toggle.innerHTML = '<i class="bx bx-chevron-up"></i> Keyboard';
+            document.body.appendChild(toggle);
+        }
+        
+        // Remove any existing listeners
+        const newToggle = toggle.cloneNode(true);
+        toggle.parentNode.replaceChild(newToggle, toggle);
+        newToggle.addEventListener('click', () => this.toggleKeyboard());
     }
 
     toggleTerminal() {
@@ -88,14 +115,27 @@ class VirtualKeyboard {
     }
 
     toggleKeyboard() {
-        this.container.classList.toggle('visible');
+        if (!this.container) return;
+
+        this.isVisible = !this.isVisible;
+        this.container.classList.toggle('visible', this.isVisible);
+        
         const toggle = document.querySelector('.keyboard-toggle');
-        const icon = toggle.querySelector('i');
-        icon.classList.toggle('bx-chevron-up');
-        icon.classList.toggle('bx-chevron-down');
+        if (toggle) {
+            const icon = toggle.querySelector('i');
+            icon.classList.toggle('bx-chevron-up', !this.isVisible);
+            icon.classList.toggle('bx-chevron-down', this.isVisible);
+        }
+
+        // Focus input when showing keyboard
+        if (this.isVisible && this.input) {
+            this.input.focus();
+        }
     }
 
     render() {
+        if (!this.container) return;
+
         const keyboardContent = document.createElement('div');
         keyboardContent.className = 'keyboard-content';
         
@@ -153,6 +193,9 @@ class VirtualKeyboard {
     }
 
     addEventListeners() {
+        if (!this.container || !this.input) return;
+
+        // Keyboard key press events
         this.container.addEventListener('click', (e) => {
             const key = e.target.closest('.key');
             if (!key) return;
@@ -165,6 +208,7 @@ class VirtualKeyboard {
             }
         });
 
+        // Touch events for visual feedback
         this.container.addEventListener('touchstart', (e) => {
             const key = e.target.closest('.key');
             if (key) {
@@ -178,14 +222,29 @@ class VirtualKeyboard {
                 key.classList.remove('pressed');
             }
         }, { passive: true });
+
+        // Input focus event
+        this.input.addEventListener('focus', () => {
+            if (!this.isVisible) {
+                this.toggleKeyboard();
+            }
+        });
+
+        // Click outside to hide keyboard
+        document.addEventListener('click', (e) => {
+            if (this.isVisible && 
+                !e.target.closest('.keyboard-container') && 
+                !e.target.closest('.command-input') &&
+                !e.target.closest('.keyboard-toggle')) {
+                this.toggleKeyboard();
+            }
+        });
     }
 
     handleKeyPress(value) {
         if (!this.input) return;
 
-        // Temporarily remove readonly attribute
         this.input.removeAttribute('readonly');
-        
         let shouldFocus = true;
 
         switch(value) {
@@ -227,7 +286,6 @@ class VirtualKeyboard {
                 }
         }
 
-        // Set readonly back
         setTimeout(() => {
             this.input.setAttribute('readonly', true);
             if (shouldFocus) {
@@ -235,11 +293,12 @@ class VirtualKeyboard {
             }
         }, 0);
 
-        // Prevent default keyboard behavior
         return false;
     }
 
     updateModifierState() {
+        if (!this.container) return;
+
         this.container.querySelectorAll('.key').forEach(key => {
             const value = key.dataset.key;
             if (value.length === 1 && value.match(/[a-z]/i)) {
@@ -256,11 +315,5 @@ class VirtualKeyboard {
     }
 }
 
-// Initialize keyboard when DOM is loaded
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        window.keyboard = new VirtualKeyboard();
-    });
-} else {
-    window.keyboard = new VirtualKeyboard();
-}
+// Initialize keyboard
+window.keyboard = new VirtualKeyboard();
