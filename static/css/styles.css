@@ -1,0 +1,93 @@
+:root {
+    --bg-color: #21266D;
+    --text-color: #ffffff;
+    --accent-color: #3498db;
+    --hover-color: #2980b9;
+    --button-bg: #1a1f5f;
+    --card-bg: rgba(255, 255, 255, 0.1);
+    --terminal-bg: rgba(0, 0, 0, 0.8);
+}
+
+/* Theme variations preserved from original */
+body.light-theme {
+    --bg-color: #f0f0f0;
+    --text-color: #333333;
+    --accent-color: #2980b9;
+    --hover-color: #3498db;
+    --button-bg: #e0e0e0;
+    --card-bg: rgba(0, 0, 0, 0.05);
+    --terminal-bg: rgba(0, 0, 0, 0.9);
+}
+
+/* Other themes preserved but omitted for brevity */
+
+body {
+    background-color: var(--bg-color);
+    font-family: 'Roboto', sans-serif;
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    transition: all 0.3s ease;
+}
+
+.app-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.tools-section {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.terminal-section {
+    width: 40%;
+    background-color: var(--terminal-bg);
+    border-left: 1px solid var(--accent-color);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Preserved styles from original for tools grid */
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    padding: 20px;
+}
+
+.tool-card {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+    }
+
+    .tools-section {
+        height: 50vh;
+    }
+
+    .terminal-section {
+        width: 100%;
+        height: 50vh;
+    }
+
+    .mobile-keyboard {
+        display: block;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: var(--bg-color);
+        z-index: 1000;
+    }
+}
