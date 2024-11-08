@@ -28,12 +28,11 @@ class Keyboard {
         
         if (this.container) {
             this.container.classList.toggle('visible', this.isVisible);
-            
-            // Ensure input focus when keyboard shows
             if (this.isVisible) {
                 const input = document.querySelector('.command-input');
                 if (input) {
                     input.focus();
+                    input.readOnly = false;
                 }
             }
         }

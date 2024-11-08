@@ -41,6 +41,9 @@ class Terminal {
                 window.keyboard.toggleKeyboard(true);
             }
         });
+
+        // Remove readonly attribute
+        this.input.removeAttribute('readonly');
     }
 
     setupTerminalHeader() {
