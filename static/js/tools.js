@@ -1,5 +1,6 @@
 class ToolsManager {
     constructor() {
+        this.initialized = false;
         this.tools = [
             {
                 id: 'port-scanner',
@@ -44,78 +45,51 @@ class ToolsManager {
                 action: 'system'
             }
         ];
-        this.initialized = false;
-        this.retryCount = 0;
-        this.maxRetries = 3;
-    }
-
-    init() {
-        // Wait for DOM to be fully loaded
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.initializeWithRetry());
-        } else {
-            this.initializeWithRetry();
-        }
-    }
-
-    async initializeWithRetry() {
-        while (this.retryCount < this.maxRetries && !this.initialized) {
-            try {
-                await this.setup();
-                this.initialized = true;
-                break;
-            } catch (error) {
-                console.warn(`Attempt ${this.retryCount + 1} failed:`, error);
-                this.retryCount++;
-                if (this.retryCount < this.maxRetries) {
-                    await new Promise(resolve => setTimeout(resolve, 1000 * this.retryCount));
-                }
-            }
-        }
-
-        if (!this.initialized) {
-            console.error('Failed to initialize ToolsManager after multiple attempts');
-        }
-    }
-
-    async setup() {
-        // Ensure DOM elements exist before proceeding
-        if (!document.querySelector('.tools-menu')) {
-            await this.createToolsMenu();
-        }
         
-        await this.initializeElements();
-        this.addEventListeners();
-    }
-
-    async createToolsMenu() {
-        return new Promise((resolve) => {
-            const toolsMenu = document.createElement('div');
-            toolsMenu.className = 'tools-menu';
-            toolsMenu.innerHTML = `
-                <button class="tools-toggle">
-                    <i class='bx bx-chevron-down'></i> Tools
-                </button>
-                <div class="tools-grid"></div>
-            `;
-            
-            const container = document.querySelector('.app-container');
-            if (container) {
-                container.insertBefore(toolsMenu, container.firstChild);
-                resolve();
-            } else {
-                throw new Error('App container not found');
-            }
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            this.init();
         });
     }
 
-    async initializeElements() {
+    async init() {
+        try {
+            await this.setupElements();
+            this.addEventListeners();
+            this.initialized = true;
+        } catch (error) {
+            console.error('Failed to initialize ToolsManager:', error);
+            // Retry initialization after a delay
+            if (!this.initialized) {
+                setTimeout(() => this.init(), 1000);
+            }
+        }
+    }
+
+    async setupElements() {
         return new Promise((resolve, reject) => {
             this.toolsMenu = document.querySelector('.tools-menu');
-            this.toolsGrid = document.querySelector('.tools-grid');
-            this.toolsToggle = document.querySelector('.tools-toggle');
+            if (!this.toolsMenu) {
+                this.toolsMenu = document.createElement('div');
+                this.toolsMenu.className = 'tools-menu';
+                this.toolsMenu.innerHTML = `
+                    <button class="tools-toggle">
+                        <i class='bx bx-chevron-down'></i> Tools
+                    </button>
+                    <div class="tools-grid"></div>
+                `;
+                const container = document.querySelector('.app-container');
+                if (!container) {
+                    reject(new Error('App container not found'));
+                    return;
+                }
+                container.insertBefore(this.toolsMenu, container.firstChild);
+            }
 
-            if (!this.toolsMenu || !this.toolsGrid || !this.toolsToggle) {
+            this.toolsGrid = this.toolsMenu.querySelector('.tools-grid');
+            this.toolsToggle = this.toolsMenu.querySelector('.tools-toggle');
+
+            if (!this.toolsGrid || !this.toolsToggle) {
                 reject(new Error('Required tools elements not found'));
                 return;
             }
@@ -130,22 +104,16 @@ class ToolsManager {
             throw new Error('Tools grid or tools array not available');
         }
 
-        try {
-            const toolsHtml = this.tools.map(tool => `
-                <div class="tool-card" data-action="${tool.action}" id="${tool.id}">
-                    <div class="tool-icon"><i class='${tool.icon}'></i></div>
-                    <div class="tool-name">${tool.name}</div>
-                    <div class="tool-description">${tool.description}</div>
-                    <button class="use-tool-btn">Use Tool</button>
-                </div>
-            `).join('');
+        const toolsHtml = this.tools.map(tool => `
+            <div class="tool-card" data-action="${tool.action}" id="${tool.id}">
+                <div class="tool-icon"><i class='${tool.icon}'></i></div>
+                <div class="tool-name">${tool.name}</div>
+                <div class="tool-description">${tool.description}</div>
+                <button class="use-tool-btn">Use Tool</button>
+            </div>
+        `).join('');
 
-            this.toolsGrid.innerHTML = toolsHtml;
-        } catch (error) {
-            console.error('Error rendering tools:', error);
-            this.toolsGrid.innerHTML = '<div class="error">Error loading tools</div>';
-            throw error;
-        }
+        this.toolsGrid.innerHTML = toolsHtml;
     }
 
     addEventListeners() {
@@ -167,6 +135,7 @@ class ToolsManager {
             const icon = this.toolsToggle.querySelector('i');
             if (icon) {
                 icon.classList.toggle('bx-chevron-up');
+                icon.classList.toggle('bx-chevron-down');
             }
         });
     }
@@ -176,7 +145,10 @@ class ToolsManager {
             const terminal = document.querySelector('.terminal');
             const input = terminal?.querySelector('.command-input');
             
-            if (!input) return;
+            if (!input) {
+                console.error('Terminal input not found');
+                return;
+            }
 
             const commands = {
                 'scan': 'scan ',
@@ -203,6 +175,4 @@ class ToolsManager {
 }
 
 // Initialize tools manager
-const toolsManager = new ToolsManager();
-toolsManager.init();
-window.toolsManager = toolsManager;
+window.toolsManager = new ToolsManager();

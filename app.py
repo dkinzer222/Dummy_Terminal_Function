@@ -9,6 +9,7 @@ from functools import wraps
 import time
 
 app = Flask(__name__)
+app.config['TITLE'] = 'Dummy Terminal'
 
 # List of allowed system commands for security
 ALLOWED_COMMANDS = {
@@ -38,7 +39,7 @@ def handle_errors(f):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', title=app.config['TITLE'])
 
 @app.route('/api/scan', methods=['POST'])
 @handle_errors
@@ -54,8 +55,6 @@ def scan():
         }), 400
     
     scanner = PortScanner()
-    # Simulate loading state for better UX
-    time.sleep(1)
     results = scanner.scan(host)
     
     return jsonify({
@@ -99,11 +98,9 @@ def execute_system_command():
             'status': 'error'
         }), 400
 
-    # Split command into parts for security
     cmd_parts = shlex.split(command)
     base_cmd = cmd_parts[0]
     
-    # Security check: only allow specific commands
     if base_cmd not in ALLOWED_COMMANDS:
         return jsonify({
             'error': True,
@@ -112,7 +109,6 @@ def execute_system_command():
         }), 403
     
     try:
-        # Execute command with a timeout and capture output
         result = subprocess.run(
             cmd_parts,
             capture_output=True,

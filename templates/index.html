@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MobileTerminalInterface</title>
+    <title>Dummy Terminal</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
@@ -14,21 +14,12 @@
         <header class="app-header">
             <div class="header-left">
                 <i class='bx bx-refresh'></i>
-                <span>MobileTerminalInterface</span>
+                <span>Dummy Terminal</span>
             </div>
             <div class="header-right">
                 <i class='bx bx-dots-vertical-rounded'></i>
             </div>
         </header>
-
-        <div class="tools-menu">
-            <button class="tools-toggle">
-                <i class='bx bx-chevron-down'></i> Tools
-            </button>
-            <div class="tools-grid">
-                <!-- Tools will be rendered here -->
-            </div>
-        </div>
 
         <nav class="tab-navigation">
             <button class="tab-button active" data-tab="progress">Progress</button>
@@ -40,7 +31,7 @@
                 <div class="terminal-section">
                     <div class="terminal">
                         <div class="terminal-output">
-                            <!-- Initial terminal text will appear here -->
+                            <!-- Terminal output will appear here -->
                         </div>
                         <div class="terminal-input">
                             <span class="prompt">$</span>
@@ -55,6 +46,13 @@
                 </div>
             </div>
         </main>
+
+        <div class="tools-menu">
+            <button class="tools-toggle">
+                <i class='bx bx-chevron-down'></i> Tools
+            </button>
+            <div class="tools-grid"></div>
+        </div>
 
         <div class="keyboard-container">
             <!-- Virtual keyboard will be rendered here -->
