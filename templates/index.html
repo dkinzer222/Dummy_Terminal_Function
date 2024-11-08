@@ -3,64 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MobileTerminalInterface</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <title>Network Security Toolkit</title>
     <link href="{{ url_for('static', filename='css/terminal.css') }}" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container">
-        <div class="status-bar">
-            <div>10:07</div>
-            <div class="network-indicators">
-                <i class="fas fa-signal"></i>
-                <i class="fas fa-wifi"></i>
-                <i class="fas fa-battery-full"></i>
-            </div>
-        </div>
-
-        <div class="nav-bar">
-            <div class="nav-title">Translation Available</div>
-            <div class="nav-icons">
-                <button class="nav-button"><i class="fas fa-language"></i></button>
-                <button class="nav-button"><i class="fas fa-arrow-rotate-right"></i></button>
-            </div>
-        </div>
-
-        <div class="tab-bar">
-            <div class="tab active">Progress</div>
-            <div class="tab">Output</div>
-        </div>
-
-        <div class="main-content">
-            <div class="terminal">
-                <div class="terminal-output"></div>
-                <div class="terminal-input">
-                    <span class="prompt"></span>
-                    <input type="text" class="command-input" autocomplete="off" spellcheck="false">
-                </div>
-            </div>
-        </div>
-
-        <div class="message-input-container">
-            <div class="message-input-wrapper">
-                <button class="input-button"><i class="fas fa-paperclip"></i></button>
-                <input type="text" class="message-input" placeholder="Type message...">
-                <button class="send-button"><i class="fas fa-arrow-up"></i></button>
-            </div>
-        </div>
-
-        <div class="suggestion-bar">
-            <button class="suggestion">I</button>
-            <button class="suggestion">The</button>
-            <button class="suggestion">I'm</button>
-        </div>
-
-        <div class="keyboard-container">
-            <!-- Keyboard will be dynamically generated -->
+    <div class="terminal">
+        <div class="terminal-output"></div>
+        <div class="terminal-input">
+            <span class="prompt"></span>
+            <input type="text" class="command-input" autocomplete="off" spellcheck="false">
         </div>
     </div>
-
+    <div class="keyboard-container">
+        <!-- Keyboard will be dynamically generated -->
+    </div>
     <script src="{{ url_for('static', filename='js/terminal.js') }}"></script>
     <script src="{{ url_for('static', filename='js/keyboard.js') }}"></script>
 </body>

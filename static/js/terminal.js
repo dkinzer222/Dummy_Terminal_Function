@@ -5,18 +5,16 @@ class Terminal {
         this.input = document.querySelector('.command-input');
         this.history = [];
         this.historyIndex = -1;
-        this.username = 'user';
-        this.device = 'device';
+        this.username = 'mobile';
+        this.device = 'Jeffs-iPhone';
         this.commandHandlers = {
             'help': () => this.showHelp(),
             'clear': () => this.clear(),
-            'tools': () => this.listTools(),
             'scan': (args) => this.runPortScan(args),
             'lookup': (args) => this.ipLookup(args),
             'dns': (args) => this.dnsLookup(args)
         };
         
-        // Enhanced command metadata for autocompletion
         this.commandMeta = {
             'help': { 
                 description: 'Show available commands and usage',
@@ -27,11 +25,6 @@ class Terminal {
                 description: 'Clear terminal screen',
                 args: [],
                 examples: ['clear']
-            },
-            'tools': { 
-                description: 'List available security tools',
-                args: [],
-                examples: ['tools']
             },
             'scan': { 
                 description: 'Scan ports on specified host',
@@ -65,18 +58,16 @@ class Terminal {
     createSuggestionsBox() {
         this.suggestionsBox = document.createElement('div');
         this.suggestionsBox.className = 'suggestions-box';
-        this.suggestionsBox.style.display = 'none';
         this.terminal.appendChild(this.suggestionsBox);
     }
 
     updateSuggestions(input) {
         const parts = input.split(' ');
-        const cmd = parts[0];
+        const cmd = parts[0].toLowerCase();
         const args = parts.slice(1);
         let suggestions = [];
 
         if (args.length === 0) {
-            // Complete command names
             suggestions = Object.entries(this.commandMeta)
                 .filter(([name]) => name.startsWith(cmd))
                 .map(([name, meta]) => ({
@@ -84,30 +75,20 @@ class Terminal {
                     description: meta.description
                 }));
         } else if (this.commandMeta[cmd]) {
-            // Complete arguments if command exists
             const meta = this.commandMeta[cmd];
             if (meta.args && meta.args.length >= args.length) {
                 const currentArgIndex = args.length - 1;
-                const currentArg = args[currentArgIndex];
+                const currentArg = args[currentArgIndex].toLowerCase();
                 
-                // Show example values for the current argument
-                if (meta.examples && meta.examples.length > 0) {
-                    suggestions = meta.examples.map(example => {
+                suggestions = meta.examples
+                    .map(example => {
                         const exampleArgs = example.split(' ');
                         return {
                             text: exampleArgs[currentArgIndex + 1] || '',
                             description: `Example: ${example}`
                         };
-                    });
-                }
-                
-                // Add the argument placeholder as a suggestion
-                if (meta.args[currentArgIndex]) {
-                    suggestions.push({
-                        text: meta.args[currentArgIndex],
-                        description: 'Expected argument'
-                    });
-                }
+                    })
+                    .filter(s => s.text.toLowerCase().startsWith(currentArg));
             }
         }
 
@@ -130,12 +111,6 @@ class Terminal {
                 </div>
             `).join('');
         this.suggestionsBox.style.display = 'block';
-        
-        // Position the suggestions box
-        const inputRect = this.input.getBoundingClientRect();
-        this.suggestionsBox.style.bottom = `${window.innerHeight - inputRect.top + 8}px`;
-        this.suggestionsBox.style.left = `${inputRect.left}px`;
-        this.suggestionsBox.style.width = `${inputRect.width}px`;
     }
 
     applySuggestion() {
@@ -159,7 +134,7 @@ class Terminal {
     updatePrompt() {
         const prompt = document.querySelector('.prompt');
         if (prompt) {
-            prompt.textContent = `${this.username}-${this.device}:~ ${this.username}$`;
+            prompt.textContent = `${this.device}:~ ${this.username}$`;
         }
     }
 
@@ -175,6 +150,17 @@ class Terminal {
         line.textContent = text;
         this.output.appendChild(line);
         this.output.scrollTop = this.output.scrollHeight;
+    }
+
+    clear() {
+        this.output.innerHTML = '';
+    }
+
+    showHelp() {
+        this.write('Available commands:');
+        Object.entries(this.commandMeta).forEach(([name, meta]) => {
+            this.write(`  ${name} ${meta.args.join(' ')} - ${meta.description}`);
+        });
     }
 
     addEventListeners() {
@@ -236,7 +222,6 @@ class Terminal {
             this.updateSuggestions(this.input.value);
         });
 
-        // Hide suggestions when clicking outside
         document.addEventListener('click', (e) => {
             if (!this.suggestionsBox.contains(e.target)) {
                 this.suggestionsBox.style.display = 'none';
@@ -245,25 +230,23 @@ class Terminal {
     }
 
     executeCommand(command) {
-        this.write(`${this.username}-${this.device}:~ ${this.username}$ ${command}`, 'command');
+        this.write(`${this.device}:~ ${this.username}$ ${command}`, 'command');
         const [cmd, ...args] = command.split(' ');
         
         if (this.commandHandlers[cmd]) {
             this.commandHandlers[cmd](args);
         } else {
             this.write(`Command not found: ${cmd}`);
-            if (Object.keys(this.commandHandlers).some(c => c.startsWith(cmd))) {
+            const suggestions = Object.keys(this.commandHandlers)
+                .filter(c => c.startsWith(cmd));
+            if (suggestions.length > 0) {
                 this.write('Did you mean one of these?');
-                Object.entries(this.commandMeta)
-                    .filter(([name]) => name.startsWith(cmd))
-                    .forEach(([name, meta]) => {
-                        this.write(`  ${name} - ${meta.description}`);
-                    });
+                suggestions.forEach(suggestion => {
+                    this.write(`  ${suggestion} - ${this.commandMeta[suggestion].description}`);
+                });
             }
         }
     }
-
-    // ... (rest of the methods remain unchanged)
 }
 
 document.addEventListener('DOMContentLoaded', () => {
