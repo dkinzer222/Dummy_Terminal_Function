@@ -2,6 +2,7 @@ class VirtualKeyboard {
     constructor() {
         this.container = document.querySelector('.keyboard-container');
         this.input = document.querySelector('.command-input');
+        this.terminal = document.querySelector('.terminal');
         this.isCollapsed = false;
         this.showSpecialKeys = false;
         
@@ -43,27 +44,63 @@ class VirtualKeyboard {
         const controls = document.createElement('div');
         controls.className = 'keyboard-controls';
         
+        // Terminal toggle button
+        const toggleTerminal = document.createElement('button');
+        toggleTerminal.className = 'keyboard-control-btn';
+        toggleTerminal.innerHTML = '<i class="bx bx-terminal"></i> Terminal';
+        toggleTerminal.onclick = () => this.toggleTerminal();
+
+        // Special keys toggle
         const toggleSpecialKeys = document.createElement('button');
         toggleSpecialKeys.className = 'keyboard-control-btn';
-        toggleSpecialKeys.innerHTML = '<i class="bx bx-chevron-down"></i>';
+        toggleSpecialKeys.innerHTML = '<i class="bx bx-chevron-down"></i> Special';
         toggleSpecialKeys.onclick = () => this.toggleSpecialKeys();
 
+        // Keyboard toggle
         const toggleKeyboard = document.createElement('button');
         toggleKeyboard.className = 'keyboard-control-btn';
         toggleKeyboard.innerHTML = '<i class="bx bx-keyboard"></i>';
         toggleKeyboard.onclick = () => this.toggleKeyboard();
 
+        controls.appendChild(toggleTerminal);
         controls.appendChild(toggleSpecialKeys);
         controls.appendChild(toggleKeyboard);
         
         this.container.appendChild(controls);
     }
 
+    toggleTerminal() {
+        if (this.terminal) {
+            this.terminal.classList.toggle('minimized');
+            const btn = this.container.querySelector('.keyboard-control-btn');
+            const icon = btn.querySelector('i');
+            icon.classList.toggle('bx-terminal');
+            icon.classList.toggle('bx-window');
+        }
+    }
+
+    toggleSpecialKeys() {
+        this.showSpecialKeys = !this.showSpecialKeys;
+        this.render();
+        const btn = this.container.querySelectorAll('.keyboard-control-btn')[1];
+        const icon = btn.querySelector('i');
+        icon.classList.toggle('bx-chevron-down');
+        icon.classList.toggle('bx-chevron-up');
+    }
+
+    toggleKeyboard() {
+        this.isCollapsed = !this.isCollapsed;
+        this.container.classList.toggle('collapsed');
+        const btn = this.container.querySelectorAll('.keyboard-control-btn')[2];
+        const icon = btn.querySelector('i');
+        icon.classList.toggle('bx-keyboard');
+        icon.classList.toggle('bx-chevron-down');
+    }
+
     render() {
         const keyboardContent = document.createElement('div');
         keyboardContent.className = 'keyboard-content';
         
-        // Render special keys if enabled
         if (this.showSpecialKeys) {
             const specialKeysDiv = document.createElement('div');
             specialKeysDiv.className = 'special-keys';
@@ -76,7 +113,6 @@ class VirtualKeyboard {
             keyboardContent.appendChild(specialKeysDiv);
         }
 
-        // Render main keyboard
         const mainKeysDiv = document.createElement('div');
         mainKeysDiv.className = 'main-keys';
         
@@ -87,16 +123,11 @@ class VirtualKeyboard {
         
         keyboardContent.appendChild(mainKeysDiv);
         
-        // Clear and update container
         const oldContent = this.container.querySelector('.keyboard-content');
         if (oldContent) {
             oldContent.remove();
         }
         this.container.appendChild(keyboardContent);
-        
-        // Update container classes
-        this.container.classList.toggle('collapsed', this.isCollapsed);
-        this.container.classList.toggle('special-keys-visible', this.showSpecialKeys);
     }
 
     createRow(keys) {
@@ -109,7 +140,6 @@ class VirtualKeyboard {
             keyDiv.textContent = key;
             keyDiv.dataset.key = key;
             
-            // Add specific classes for special keys
             if (['Shift', 'Ctrl', 'Alt'].includes(key)) {
                 keyDiv.classList.add('modifier-key');
             } else if (['Enter', 'Backspace', 'Tab', 'Caps'].includes(key)) {
@@ -124,16 +154,6 @@ class VirtualKeyboard {
         return rowDiv;
     }
 
-    toggleSpecialKeys() {
-        this.showSpecialKeys = !this.showSpecialKeys;
-        this.render();
-    }
-
-    toggleKeyboard() {
-        this.isCollapsed = !this.isCollapsed;
-        this.render();
-    }
-
     addEventListeners() {
         this.container.addEventListener('click', (e) => {
             const key = e.target.closest('.key');
@@ -142,13 +162,11 @@ class VirtualKeyboard {
             const value = key.dataset.key;
             this.handleKeyPress(value);
             
-            // Provide haptic feedback if available
             if (window.navigator.vibrate) {
                 window.navigator.vibrate(50);
             }
         });
 
-        // Handle touch events
         this.container.addEventListener('touchstart', (e) => {
             const key = e.target.closest('.key');
             if (key) {
