@@ -3,131 +3,28 @@ class Terminal {
         this.terminal = document.querySelector('.terminal');
         this.output = document.querySelector('.terminal-output');
         this.input = document.querySelector('.command-input');
-        this.prompt = document.querySelector('.prompt');
         this.history = [];
         this.historyIndex = -1;
-        this.username = 'mobile';
-        this.device = 'Jeffs-iPhone';
-        this.commands = {
-            'help': { 
-                desc: 'Show available commands',
-                fn: () => this.showHelp()
-            },
-            'clear': {
-                desc: 'Clear terminal screen',
-                fn: () => this.clear()
-            },
-            'ls': {
-                desc: 'List directory contents',
-                fn: () => this.listDirectory()
-            },
-            'pwd': {
-                desc: 'Print working directory',
-                fn: () => this.printWorkingDirectory()
-            }
+        this.commandHandlers = {
+            'help': () => this.showHelp(),
+            'clear': () => this.clear(),
+            'tools': () => this.listTools(),
+            'scan': (args) => this.runPortScan(args),
+            'lookup': (args) => this.ipLookup(args)
         };
-        this.setupAutocompletion();
-        this.updatePrompt();
+        
+        this.init();
+    }
+
+    init() {
         this.welcomeMessage();
+        this.addEventListeners();
     }
 
-    setupAutocompletion() {
-        this.suggestions = document.createElement('div');
-        this.suggestions.className = 'suggestions-box';
-        this.terminal.appendChild(this.suggestions);
-
-        this.input.addEventListener('input', () => this.updateSuggestions());
-        this.input.addEventListener('keydown', (e) => this.handleKeydown(e));
-        document.addEventListener('click', () => this.suggestions.style.display = 'none');
-    }
-
-    updateSuggestions() {
-        const input = this.input.value.toLowerCase();
-        if (!input) {
-            this.suggestions.style.display = 'none';
-            return;
-        }
-
-        const matches = Object.entries(this.commands)
-            .filter(([cmd]) => cmd.startsWith(input))
-            .map(([cmd, details]) => ({
-                command: cmd,
-                description: details.desc
-            }));
-
-        if (matches.length === 0) {
-            this.suggestions.style.display = 'none';
-            return;
-        }
-
-        this.suggestions.innerHTML = matches.map(match => `
-            <div class="suggestion">
-                <div class="suggestion-text">${match.command}</div>
-                <div class="suggestion-description">${match.description}</div>
-            </div>
-        `).join('');
-        this.suggestions.style.display = 'block';
-    }
-
-    handleKeydown(e) {
-        switch(e.key) {
-            case 'Enter':
-                e.preventDefault();
-                this.execute(this.input.value);
-                break;
-            case 'Tab':
-                e.preventDefault();
-                this.autocomplete();
-                break;
-            case 'ArrowUp':
-                e.preventDefault();
-                this.navigateHistory(-1);
-                break;
-            case 'ArrowDown':
-                e.preventDefault();
-                this.navigateHistory(1);
-                break;
-        }
-    }
-
-    autocomplete() {
-        const input = this.input.value.toLowerCase();
-        const matches = Object.keys(this.commands).filter(cmd => cmd.startsWith(input));
-        
-        if (matches.length === 1) {
-            this.input.value = matches[0];
-            this.suggestions.style.display = 'none';
-        }
-    }
-
-    execute(command) {
-        const cmd = command.trim().toLowerCase();
-        this.write(`${this.device}:~ ${this.username}$ ${command}`, 'command');
-        
-        if (cmd) {
-            this.history.push(cmd);
-            this.historyIndex = this.history.length;
-            
-            if (this.commands[cmd]) {
-                this.commands[cmd].fn();
-            } else {
-                this.write(`Command not found: ${cmd}`);
-            }
-        }
-        
-        this.input.value = '';
-        this.suggestions.style.display = 'none';
-    }
-
-    navigateHistory(direction) {
-        if (direction === -1 && this.historyIndex > 0) {
-            this.historyIndex--;
-        } else if (direction === 1 && this.historyIndex < this.history.length) {
-            this.historyIndex++;
-        }
-        
-        this.input.value = this.historyIndex < this.history.length ? 
-            this.history[this.historyIndex] : '';
+    welcomeMessage() {
+        this.write('Network Security Toolkit v1.0');
+        this.write('Type "help" for available commands');
+        this.write('');
     }
 
     write(text, className = '') {
@@ -138,38 +35,109 @@ class Terminal {
         this.output.scrollTop = this.output.scrollHeight;
     }
 
+    addEventListeners() {
+        this.input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const command = this.input.value.trim();
+                if (command) {
+                    this.executeCommand(command);
+                    this.history.push(command);
+                    this.historyIndex = this.history.length;
+                }
+                this.input.value = '';
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (this.historyIndex > 0) {
+                    this.historyIndex--;
+                    this.input.value = this.history[this.historyIndex];
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (this.historyIndex < this.history.length - 1) {
+                    this.historyIndex++;
+                    this.input.value = this.history[this.historyIndex];
+                } else {
+                    this.historyIndex = this.history.length;
+                    this.input.value = '';
+                }
+            }
+        });
+    }
+
+    executeCommand(command) {
+        this.write(`$ ${command}`, 'command');
+        const [cmd, ...args] = command.split(' ');
+        
+        if (this.commandHandlers[cmd]) {
+            this.commandHandlers[cmd](args);
+        } else {
+            this.write(`Command not found: ${cmd}`);
+        }
+    }
+
+    showHelp() {
+        const commands = [
+            'help    - Show this help message',
+            'clear   - Clear terminal screen',
+            'tools   - List available tools',
+            'scan    - Run port scan (usage: scan <host>)',
+            'lookup  - IP lookup (usage: lookup <ip>)'
+        ];
+        commands.forEach(cmd => this.write(cmd));
+    }
+
     clear() {
         this.output.innerHTML = '';
     }
 
-    showHelp() {
-        this.write('Available commands:');
-        Object.entries(this.commands).forEach(([cmd, details]) => {
-            this.write(`  ${cmd}\t${details.desc}`);
-        });
+    listTools() {
+        const tools = [
+            'Port Scanner',
+            'IP Lookup',
+            'DNS Lookup',
+            'Network Speed Test',
+            'SSL Certificate Checker',
+            'Wi-Fi Analyzer',
+            'Subnet Calculator'
+        ];
+        this.write('Available Tools:');
+        tools.forEach(tool => this.write(`- ${tool}`));
     }
 
-    listDirectory() {
-        this.write('Desktop  Documents  Downloads');
-    }
-
-    printWorkingDirectory() {
-        this.write('/home/mobile');
-    }
-
-    updatePrompt() {
-        if (this.prompt) {
-            this.prompt.textContent = `${this.device}:~ ${this.username}$`;
+    async runPortScan(args) {
+        if (!args.length) {
+            this.write('Usage: scan <host>');
+            return;
+        }
+        
+        this.write(`Scanning ${args[0]}...`);
+        try {
+            const response = await fetch(`/api/scan?host=${args[0]}`);
+            const data = await response.json();
+            this.write(JSON.stringify(data, null, 2));
+        } catch (err) {
+            this.write('Error: Unable to complete scan');
         }
     }
 
-    welcomeMessage() {
-        this.write('Network Security Toolkit v1.0');
-        this.write('Type "help" for available commands');
-        this.write('');
+    async ipLookup(args) {
+        if (!args.length) {
+            this.write('Usage: lookup <ip>');
+            return;
+        }
+        
+        this.write(`Looking up ${args[0]}...`);
+        try {
+            const response = await fetch(`/api/lookup?ip=${args[0]}`);
+            const data = await response.json();
+            this.write(JSON.stringify(data, null, 2));
+        } catch (err) {
+            this.write('Error: Unable to complete lookup');
+        }
     }
 }
 
+// Initialize terminal when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new Terminal();
 });

@@ -1,39 +1,37 @@
-class Tools {
+class ToolsManager {
     constructor() {
+        this.toolsGrid = document.querySelector('.tools-grid');
         this.tools = [
             {
-                name: 'Port Scanner',
-                description: 'Scan ports on specified host',
-                icon: 'fas fa-search',
-                action: 'scan'
-            },
-            {
                 name: 'IP Lookup',
-                description: 'Lookup information for IP address',
-                icon: 'fas fa-globe',
+                icon: 'bx bx-search-alt',
+                description: 'Get detailed information about an IP address',
                 action: 'lookup'
             },
             {
+                name: 'Port Scanner',
+                icon: 'bx bx-shield-quarter',
+                description: 'Scan for open ports on a target system',
+                action: 'scan'
+            },
+            {
                 name: 'DNS Lookup',
-                description: 'Perform DNS lookup for domain',
-                icon: 'fas fa-server',
+                icon: 'bx bx-code-block',
+                description: 'Retrieve DNS records for a domain',
                 action: 'dns'
-            }
+            },
+            // Additional tools preserved from original
         ];
+        
         this.init();
     }
 
     init() {
-        this.toolsGrid = document.querySelector('.tools-grid');
-        if (this.toolsGrid) {
-            this.render();
-            this.addEventListeners();
-        }
+        this.renderTools();
+        this.addEventListeners();
     }
 
-    render() {
-        if (!this.toolsGrid) return;
-        
+    renderTools() {
         this.toolsGrid.innerHTML = this.tools.map(tool => `
             <div class="tool-card" data-action="${tool.action}">
                 <div class="tool-icon"><i class='${tool.icon}'></i></div>
@@ -45,30 +43,37 @@ class Tools {
     }
 
     addEventListeners() {
-        if (!this.toolsGrid) return;
-        
         this.toolsGrid.addEventListener('click', (e) => {
             const toolCard = e.target.closest('.tool-card');
-            if (toolCard) {
-                const action = toolCard.dataset.action;
-                if (action) {
-                    this.executeTool(action);
-                }
-            }
+            if (!toolCard) return;
+
+            const action = toolCard.dataset.action;
+            this.executeTool(action);
         });
     }
 
     executeTool(action) {
-        const terminal = document.querySelector('.command-input');
-        if (terminal) {
-            terminal.value = action;
-            terminal.focus();
-            const event = new KeyboardEvent('keydown', { key: 'Enter' });
-            terminal.dispatchEvent(event);
+        const terminal = document.querySelector('.terminal-section');
+        const input = terminal.querySelector('.command-input');
+        
+        switch(action) {
+            case 'lookup':
+                input.value = 'lookup ';
+                break;
+            case 'scan':
+                input.value = 'scan ';
+                break;
+            case 'dns':
+                input.value = 'dns ';
+                break;
+            // Additional tool actions
         }
+        
+        input.focus();
     }
 }
 
+// Initialize tools when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new Tools();
+    new ToolsManager();
 });
