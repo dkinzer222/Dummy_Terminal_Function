@@ -12,6 +12,18 @@ class Keyboard {
             ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'Shift'],
             ['Ctrl', 'Alt', 'Space', 'Alt', 'Ctrl']
         ];
+        this.init();
+    }
+
+    init() {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.setup());
+        } else {
+            this.setup();
+        }
+    }
+
+    setup() {
         this.setupKeyboard();
         this.setupToggleButton();
         this.setupDraggable();
@@ -41,9 +53,15 @@ class Keyboard {
 
     setupKeyboard() {
         if (!this.container) return;
-
+        
         const size = this.isLocked ? { width: '100%' } : { width: '80%', left: '10%' };
         Object.assign(this.container.style, size);
+        
+        // Ensure input field stays connected to keyboard
+        const input = document.querySelector('.command-container');
+        if (input) {
+            input.style.bottom = '100%';
+        }
 
         this.container.innerHTML = this.keyboardLayout.map((row, rowIndex) => `
             <div class="keyboard-row">
@@ -61,105 +79,6 @@ class Keyboard {
                 this.onKeyPress(key);
             }
         });
-    }
-
-    setupDraggable() {
-        const lockBtn = document.createElement('button');
-        lockBtn.className = 'keyboard-lock';
-        lockBtn.innerHTML = '🔒';
-        lockBtn.style.position = 'absolute';
-        lockBtn.style.right = '10px';
-        lockBtn.style.top = '10px';
-        this.container.appendChild(lockBtn);
-
-        lockBtn.addEventListener('click', () => {
-            this.isLocked = !this.isLocked;
-            lockBtn.innerHTML = this.isLocked ? '🔒' : '🔓';
-            this.container.classList.toggle('draggable', !this.isLocked);
-            
-            if (this.isLocked) {
-                this.container.style.width = '100%';
-                this.container.style.left = '0';
-                this.container.style.bottom = '0';
-                this.container.style.top = 'auto';
-                this.container.style.height = '30vh';
-            } else {
-                this.container.style.width = '80vw';
-                this.container.style.left = '10vw';
-            }
-            
-            // Ensure input field stays connected
-            const input = document.querySelector('.terminal-input');
-            if (input) {
-                input.style.bottom = this.container.style.height;
-            }
-        });
-
-        // Add resize observer
-        const resizeObserver = new ResizeObserver(() => {
-            if (!this.isLocked) {
-                const input = document.querySelector('.terminal-input');
-                if (input) {
-                    input.style.bottom = this.container.style.height;
-                }
-            }
-        });
-        resizeObserver.observe(this.container);
-
-        const constrainPosition = () => {
-            const rect = this.container.getBoundingClientRect();
-            const windowWidth = window.innerWidth;
-            const windowHeight = window.innerHeight;
-
-            if (rect.right > windowWidth) {
-                this.container.style.left = (windowWidth - rect.width) + 'px';
-            }
-            if (rect.bottom > windowHeight) {
-                this.container.style.top = (windowHeight - rect.height) + 'px';
-            }
-            if (rect.left < 0) {
-                this.container.style.left = '0px';
-            }
-            if (rect.top < 0) {
-                this.container.style.top = '0px';
-            }
-        };
-
-        this.container.addEventListener('mousedown', (e) => {
-            if (this.isLocked || e.target === lockBtn) return;
-            this.isDragging = true;
-            this.dragStart = {
-                x: e.clientX - this.container.offsetLeft,
-                y: e.clientY - this.container.offsetTop
-            };
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!this.isDragging) return;
-            this.container.style.left = (e.clientX - this.dragStart.x) + 'px';
-            this.container.style.top = (e.clientY - this.dragStart.y) + 'px';
-            constrainPosition();
-        });
-
-        document.addEventListener('mouseup', () => {
-            this.isDragging = false;
-        });
-    }
-
-    getKeyClassName(key) {
-        const classMap = {
-            'Space': 'space-key',
-            'Shift': 'modifier-key',
-            'Ctrl': 'modifier-key',
-            'Alt': 'modifier-key',
-            'Tab': 'modifier-key',
-            'Caps': 'modifier-key',
-            'Enter': 'modifier-key',
-            'Backspace': 'modifier-key'
-        };
-        
-        if (key.startsWith('F')) return 'function-key';
-        return classMap[key] || '';
     }
 
     setupToggleButton() {
@@ -185,20 +104,98 @@ class Keyboard {
         
         if (this.container) {
             this.container.classList.toggle('visible', this.isVisible);
-            const input = document.querySelector('.terminal-input');
+            const input = document.querySelector('.command-container');
             if (input) {
-                input.classList.toggle('visible', this.isVisible);
                 if (this.isVisible) {
-                    input.focus();
-                    if (this.isLocked) {
-                        this.container.style.width = '100%';
-                        this.container.style.left = '0';
-                        this.container.style.bottom = '0';
-                        this.container.style.top = 'auto';
-                    }
+                    input.style.display = 'block';
+                    input.querySelector('.command-input').focus();
+                } else {
+                    input.style.display = 'none';
                 }
             }
         }
+    }
+
+    setupDraggable() {
+        if (!this.container) return;
+
+        const lockBtn = document.createElement('button');
+        lockBtn.className = 'keyboard-lock';
+        lockBtn.innerHTML = '🔒';
+        lockBtn.style.position = 'absolute';
+        lockBtn.style.right = '10px';
+        lockBtn.style.top = '10px';
+        this.container.appendChild(lockBtn);
+
+        lockBtn.addEventListener('click', () => {
+            this.isLocked = !this.isLocked;
+            lockBtn.innerHTML = this.isLocked ? '🔒' : '🔓';
+            this.container.classList.toggle('draggable', !this.isLocked);
+            
+            if (this.isLocked) {
+                this.container.style.width = '100%';
+                this.container.style.left = '0';
+                this.container.style.bottom = '0';
+                this.container.style.top = 'auto';
+            } else {
+                this.container.style.width = '80%';
+                this.container.style.left = '10%';
+            }
+        });
+
+        let startX, startY;
+        this.container.addEventListener('mousedown', (e) => {
+            if (this.isLocked || e.target === lockBtn) return;
+            this.isDragging = true;
+            startX = e.clientX - this.container.offsetLeft;
+            startY = e.clientY - this.container.offsetTop;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!this.isDragging) return;
+            this.container.style.left = (e.clientX - startX) + 'px';
+            this.container.style.top = (e.clientY - startY) + 'px';
+            this.constrainPosition();
+        });
+
+        document.addEventListener('mouseup', () => {
+            this.isDragging = false;
+        });
+    }
+
+    constrainPosition() {
+        const rect = this.container.getBoundingClientRect();
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        if (rect.right > windowWidth) {
+            this.container.style.left = (windowWidth - rect.width) + 'px';
+        }
+        if (rect.bottom > windowHeight) {
+            this.container.style.top = (windowHeight - rect.height) + 'px';
+        }
+        if (rect.left < 0) {
+            this.container.style.left = '0px';
+        }
+        if (rect.top < 0) {
+            this.container.style.top = '0px';
+        }
+    }
+
+    getKeyClassName(key) {
+        const classMap = {
+            'Space': 'space-key',
+            'Shift': 'modifier-key',
+            'Ctrl': 'modifier-key',
+            'Alt': 'modifier-key',
+            'Tab': 'modifier-key',
+            'Caps': 'modifier-key',
+            'Enter': 'modifier-key',
+            'Backspace': 'modifier-key'
+        };
+        
+        if (key.startsWith('F')) return 'function-key';
+        return classMap[key] || '';
     }
 }
 
