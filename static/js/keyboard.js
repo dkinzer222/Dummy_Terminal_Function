@@ -185,6 +185,11 @@ class VirtualKeyboard {
     handleKeyPress(value) {
         if (!this.input) return;
 
+        // Temporarily remove readonly attribute
+        this.input.removeAttribute('readonly');
+        
+        let shouldFocus = true;
+
         switch(value) {
             case 'Shift':
                 this.isShift = !this.isShift;
@@ -202,7 +207,12 @@ class VirtualKeyboard {
                 break;
             case 'Enter':
                 if (this.input.value.trim()) {
-                    this.input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+                    const event = new KeyboardEvent('keydown', {
+                        key: 'Enter',
+                        bubbles: true,
+                        cancelable: true
+                    });
+                    this.input.dispatchEvent(event);
                 }
                 break;
             case 'Tab':
@@ -218,8 +228,17 @@ class VirtualKeyboard {
                     }
                 }
         }
-        
-        this.input.focus();
+
+        // Set readonly back
+        setTimeout(() => {
+            this.input.setAttribute('readonly', true);
+            if (shouldFocus) {
+                this.input.focus();
+            }
+        }, 0);
+
+        // Prevent default keyboard behavior
+        return false;
     }
 
     updateModifierState() {

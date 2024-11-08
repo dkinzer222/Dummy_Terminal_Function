@@ -1,10 +1,10 @@
 class Terminal {
     constructor() {
         this.init();
+        this.usingPhysicalKeyboard = false;
     }
 
     init() {
-        // Wait for DOM to be fully loaded
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.setup());
         } else {
@@ -35,6 +35,11 @@ class Terminal {
             'speedtest': () => this.speedTest(),
             'ssl': (args) => this.sslCheck(args)
         };
+
+        // Ensure input is readonly by default
+        if (this.input) {
+            this.input.setAttribute('readonly', true);
+        }
     }
 
     setupTerminalHeader() {
@@ -55,7 +60,6 @@ class Terminal {
 
         this.terminal.insertBefore(header, this.terminal.firstChild);
 
-        // Add event listeners for terminal controls
         header.querySelector('.minimize-btn').addEventListener('click', () => this.toggleMinimize());
         header.querySelector('.maximize-btn').addEventListener('click', () => this.toggleMaximize());
     }
@@ -91,7 +95,14 @@ class Terminal {
     addEventListeners() {
         if (!this.input) return;
 
+        // Handle physical keyboard events
         this.input.addEventListener('keydown', (e) => {
+            // Only handle physical keyboard events
+            if (!e.isTrusted) return;
+
+            this.usingPhysicalKeyboard = true;
+            this.input.removeAttribute('readonly');
+
             if (e.key === 'Enter') {
                 const command = this.input.value.trim();
                 if (command) {
@@ -116,6 +127,18 @@ class Terminal {
                     this.input.value = '';
                 }
             }
+
+            // Set readonly back after a short delay
+            setTimeout(() => {
+                this.usingPhysicalKeyboard = false;
+                this.input.setAttribute('readonly', true);
+            }, 100);
+        });
+
+        // Prevent default mobile keyboard
+        this.input.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.input.blur();
         });
     }
 
@@ -205,8 +228,6 @@ class Terminal {
             this.write('Error: Unable to complete lookup');
         }
     }
-
-    // Additional tool methods can be added here
 }
 
 // Initialize terminal
