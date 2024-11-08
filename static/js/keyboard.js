@@ -66,6 +66,8 @@ class Keyboard {
             </div>
         `).join('');
 
+        this.adjustKeySize();
+
         this.container.addEventListener('click', (e) => {
             const keyButton = e.target.closest('.key');
             if (keyButton && typeof this.onKeyPress === 'function') {
@@ -107,6 +109,9 @@ class Keyboard {
                     input.style.display = 'none';
                 }
             }
+            if (this.isVisible) {
+                this.adjustKeySize();
+            }
         }
     }
 
@@ -121,7 +126,6 @@ class Keyboard {
         lockBtn.style.top = '10px';
         this.container.appendChild(lockBtn);
 
-        // Add resize handles
         const topHandle = document.createElement('div');
         topHandle.className = 'resize-handle top';
         
@@ -152,18 +156,22 @@ class Keyboard {
         const resizeHeight = (e) => {
             if (!this.isLocked) {
                 const newHeight = startHeight - (e.clientY - startY);
-                if (newHeight > 100 && newHeight < window.innerHeight * 0.8) {
-                    this.container.style.height = newHeight + 'px';
-                }
+                const minHeight = window.innerHeight * 0.2;
+                const maxHeight = window.innerHeight * 0.8;
+                const adjustedHeight = Math.min(Math.max(newHeight, minHeight), maxHeight);
+                this.container.style.height = adjustedHeight + 'px';
+                this.adjustKeySize();
             }
         };
 
         const resizeWidth = (e) => {
             if (!this.isLocked) {
                 const newWidth = startWidth + (e.clientX - startX);
-                if (newWidth > 200 && newWidth < window.innerWidth * 0.9) {
-                    this.container.style.width = newWidth + 'px';
-                }
+                const minWidth = window.innerWidth * 0.3;
+                const maxWidth = window.innerWidth * 0.9;
+                const adjustedWidth = Math.min(Math.max(newWidth, minWidth), maxWidth);
+                this.container.style.width = adjustedWidth + 'px';
+                this.adjustKeySize();
             }
         };
 
@@ -193,7 +201,20 @@ class Keyboard {
                 topHandle.style.display = 'block';
                 rightHandle.style.display = 'block';
             }
+            this.adjustKeySize();
         });
+    }
+
+    adjustKeySize() {
+        const container = this.container;
+        const rows = container.querySelectorAll('.keyboard-row');
+        const containerWidth = container.offsetWidth;
+        const containerHeight = container.offsetHeight;
+        
+        const rowHeight = containerHeight / rows.length;
+        const fontSize = Math.min(rowHeight * 0.4, containerWidth * 0.02);
+        
+        container.style.setProperty('--key-font-size', `${fontSize}px`);
     }
 
     getKeyClassName(key) {

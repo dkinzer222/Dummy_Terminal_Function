@@ -1,5 +1,6 @@
 :root {
     --accent-color: #6B5ED9;
+    --key-font-size: 12px;
 }
 
 .terminal-window {
@@ -127,10 +128,13 @@
     height: 30vh;
     z-index: 1000;
     display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .keyboard-container.visible {
-    display: block;
+    display: flex;
 }
 
 .keyboard-container.draggable {
@@ -169,16 +173,22 @@
 .keyboard-row {
     display: flex;
     justify-content: center;
-    gap: 2px;
-    margin-bottom: 2px;
+    flex-wrap: nowrap;
+    width: 100%;
+    gap: 1%;
+    margin: 1px 0;
 }
 
 .key {
-    min-width: 30px;
-    height: 30px;
-    margin: 2px;
-    padding: 5px;
-    font-size: 12px;
+    flex: 1;
+    min-width: 0;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--key-font-size);
+    padding: 0;
+    margin: 1px;
     background-color: rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(0, 123, 255, 0.2);
     border-radius: 4px;
@@ -194,11 +204,11 @@
 }
 
 .space-key {
-    min-width: 120px;
+    flex: 3;
 }
 
 .modifier-key {
-    min-width: 50px;
+    flex: 1.5;
 }
 
 @media (max-width: 768px) {
@@ -210,9 +220,6 @@
 @media (prefers-reduced-motion: reduce) {
     .terminal {
         transition: none;
-    }
-    .matrix-text {
-        animation: none;
     }
     .key {
         animation: none;
