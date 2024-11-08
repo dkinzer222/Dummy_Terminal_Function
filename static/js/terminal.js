@@ -14,7 +14,6 @@ class Terminal {
     setup() {
         this.setupElements();
         if (this.terminal && this.output && this.input) {
-            this.setupTerminalHeader();
             this.welcomeMessage();
             this.setupInput();
             this.addEventListeners();
@@ -46,30 +45,12 @@ class Terminal {
     }
 
     executeCommand(command) {
-        const cmdLine = document.createElement('div');
-        cmdLine.className = 'terminal-line command';
-        cmdLine.textContent = `$ ${command}`;
-        this.output.appendChild(cmdLine);
-        
         const output = document.createElement('div');
         output.className = 'terminal-line output';
-        output.textContent = `Executing: ${command}`;
+        output.textContent = `${command}`;
         this.output.appendChild(output);
         
         this.output.scrollTop = this.output.scrollHeight;
-    }
-
-    setupTerminalHeader() {
-        const header = document.createElement('div');
-        header.className = 'terminal-header';
-        header.innerHTML = `
-            <div class="terminal-title">Terminal</div>
-            <div class="terminal-controls">
-                <button class="minimize-btn"><i class='bx bx-minus'></i></button>
-                <button class="maximize-btn"><i class='bx bx-expand'></i></button>
-            </div>
-        `;
-        this.terminal.insertBefore(header, this.terminal.firstChild);
     }
 
     welcomeMessage() {

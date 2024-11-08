@@ -49,7 +49,7 @@
     border: 1px solid rgba(107, 94, 217, 0.2);
 }
 
-.terminal-input {
+.command-container {
     display: flex;
     align-items: center;
     position: absolute;
@@ -62,19 +62,12 @@
     border-top: 1px solid rgba(107, 94, 217, 0.2);
 }
 
-.prompt {
-    color: var(--accent-color);
-    margin-right: 10px;
-    font-weight: bold;
-    text-shadow: 0 0 5px var(--accent-color);
-}
-
 .command-input {
     background: transparent;
     border: none;
     color: var(--text-color);
     font-family: 'Courier New', monospace;
-    flex: 1 1 auto;
+    width: 100%;
     outline: none;
     font-size: 14px;
     caret-color: var(--accent-color);
