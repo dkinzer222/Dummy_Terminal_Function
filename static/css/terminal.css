@@ -18,9 +18,30 @@
     flex: 1 1 auto;
     overflow-y: auto;
     padding: 10px;
-    margin: -5px -10px;
     position: relative;
     z-index: 2;
+}
+
+.command-container {
+    position: absolute;
+    bottom: 30vh;
+    left: 0;
+    right: 0;
+    background-color: rgba(26, 29, 38, 0.95);
+    padding: 10px;
+    z-index: 1001;
+    border-top: 1px solid rgba(107, 94, 217, 0.2);
+}
+
+.command-input {
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-family: 'Courier New', monospace;
+    width: 100%;
+    outline: none;
+    font-size: 14px;
+    caret-color: var(--accent-color);
 }
 
 .keyboard-container {
@@ -49,28 +70,11 @@
     border: 1px solid rgba(107, 94, 217, 0.2);
 }
 
-.command-container {
+.keyboard-row {
     display: flex;
-    align-items: center;
-    position: absolute;
-    bottom: 30vh;
-    left: 0;
-    right: 0;
-    background-color: rgba(26, 29, 38, 0.95);
-    padding: 10px;
-    z-index: 1001;
-    border-top: 1px solid rgba(107, 94, 217, 0.2);
-}
-
-.command-input {
-    background: transparent;
-    border: none;
-    color: var(--text-color);
-    font-family: 'Courier New', monospace;
-    width: 100%;
-    outline: none;
-    font-size: 14px;
-    caret-color: var(--accent-color);
+    justify-content: center;
+    gap: 2px;
+    margin-bottom: 2px;
 }
 
 .key {
@@ -82,13 +86,6 @@
     background-color: rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(107, 94, 217, 0.2);
     border-radius: 4px;
-}
-
-.keyboard-row {
-    display: flex;
-    justify-content: center;
-    gap: 2px;
-    margin-bottom: 2px;
 }
 
 .space-key {
@@ -103,10 +100,6 @@
     white-space: pre-wrap;
     word-break: break-all;
     margin-bottom: 4px;
-}
-
-.terminal-line.command {
-    color: #4CAF50;
 }
 
 .terminal-line.output {

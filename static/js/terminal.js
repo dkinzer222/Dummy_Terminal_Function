@@ -14,7 +14,6 @@ class Terminal {
     setup() {
         this.setupElements();
         if (this.terminal && this.output && this.input) {
-            this.welcomeMessage();
             this.setupInput();
             this.addEventListeners();
         }
@@ -47,16 +46,13 @@ class Terminal {
     executeCommand(command) {
         const output = document.createElement('div');
         output.className = 'terminal-line output';
-        output.textContent = `${command}`;
+        output.textContent = command;
         this.output.appendChild(output);
-        
         this.output.scrollTop = this.output.scrollHeight;
     }
 
     welcomeMessage() {
-        this.write('Network Security Toolkit v1.0');
-        this.write('Type "help" for available commands');
-        this.write('');
+        // Remove welcome message
     }
 
     write(text, type = 'output') {
