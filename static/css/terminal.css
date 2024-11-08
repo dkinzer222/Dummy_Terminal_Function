@@ -43,6 +43,14 @@
     animation: rgb-glow 3s infinite;
 }
 
+.terminal-line.system-output {
+    color: #00ff00;
+    background-color: rgba(0, 255, 0, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Consolas', monospace;
+}
+
 .terminal-input {
     display: flex;
     align-items: center;

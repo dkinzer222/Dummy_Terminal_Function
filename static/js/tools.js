@@ -35,6 +35,13 @@ class ToolsManager {
                 icon: 'bx bx-lock',
                 description: 'Verify SSL certificates',
                 action: 'ssl'
+            },
+            {
+                id: 'system-command',
+                name: 'System Command',
+                icon: 'bx bx-terminal',
+                description: 'Execute system commands',
+                action: 'system'
             }
         ];
     }
@@ -146,7 +153,8 @@ class ToolsManager {
                 'lookup': 'lookup ',
                 'dns': 'dns ',
                 'speedtest': 'speedtest',
-                'ssl': 'ssl '
+                'ssl': 'ssl ',
+                'system': 'system '
             };
 
             const command = commands[action];

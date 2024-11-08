@@ -33,7 +33,8 @@ class Terminal {
             'lookup': (args) => this.ipLookup(args),
             'dns': (args) => this.dnsLookup(args),
             'speedtest': () => this.speedTest(),
-            'ssl': (args) => this.sslCheck(args)
+            'ssl': (args) => this.sslCheck(args),
+            'system': (args) => this.executeSystemCommand(args)
         };
 
         if (this.input) {
@@ -89,9 +90,9 @@ class Terminal {
         this.write('');
     }
 
-    write(text, isCommand = false) {
+    write(text, isCommand = false, isSystemOutput = false) {
         const line = document.createElement('div');
-        line.className = `terminal-line${isCommand ? ' command' : ''}`;
+        line.className = `terminal-line${isCommand ? ' command' : ''}${isSystemOutput ? ' system-output' : ''}`;
         line.textContent = text;
         this.output.appendChild(line);
         this.output.scrollTop = this.output.scrollHeight;
@@ -172,9 +173,12 @@ class Terminal {
             'lookup    - IP lookup (usage: lookup <ip>)',
             'dns       - DNS lookup (usage: dns <domain>)',
             'speedtest - Run network speed test',
-            'ssl       - Check SSL certificate (usage: ssl <domain>)'
+            'ssl       - Check SSL certificate (usage: ssl <domain>)',
+            'system    - Execute system command (usage: system <command>)'
         ];
         commands.forEach(cmd => this.write(cmd));
+        this.write('\nAllowed system commands:');
+        this.write('ls, pwd, whoami, date, ps, df, free, uptime, uname');
     }
 
     clear() {
@@ -237,6 +241,58 @@ class Terminal {
         } catch (err) {
             this.write('Error: Unable to complete lookup');
         }
+    }
+
+    async executeSystemCommand(args) {
+        if (!args.length) {
+            this.write('Usage: system <command>');
+            return;
+        }
+
+        const command = args.join(' ');
+        try {
+            const response = await fetch('/api/system', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ command })
+            });
+
+            const data = await response.json();
+            
+            if (data.error) {
+                this.write(`Error: ${data.message}`, false, true);
+                return;
+            }
+
+            if (data.output) {
+                this.write(data.output.trim(), false, true);
+            }
+
+            if (data.error_output) {
+                this.write(data.error_output.trim(), false, true);
+            }
+
+            if (data.exit_code !== 0) {
+                this.write(`Command exited with code ${data.exit_code}`, false, true);
+            }
+        } catch (err) {
+            this.write(`Error executing command: ${err.message}`, false, true);
+        }
+    }
+
+    // Placeholder methods for potentially missing commands
+    dnsLookup() {
+        this.write('DNS lookup functionality not implemented');
+    }
+
+    speedTest() {
+        this.write('Speed test functionality not implemented');
+    }
+
+    sslCheck() {
+        this.write('SSL check functionality not implemented');
     }
 }
 
