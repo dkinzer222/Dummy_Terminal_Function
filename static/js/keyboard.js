@@ -8,19 +8,19 @@ class VirtualKeyboard {
         
         // Main keyboard layout
         this.mainLayout = [
-            ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
-            ['Tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
-            ['Caps', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'Enter'],
+            // Row 1: 12 keys
+            ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'],
+            // Row 2: 20 keys
+            ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\\', '[', ']', 'Insert', 'Home', 'PgUp', 'Del'],
+            // Row 3: 20 keys
+            ['Tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'Caps', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k'],
+            // Bottom row
             ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'Shift'],
+            // Control row
             ['Ctrl', 'Alt', 'Space', 'Alt', 'Ctrl']
         ];
 
-        // Special keys layout
-        this.specialLayout = [
-            ['Esc', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'],
-            ['Insert', 'Home', 'PgUp', 'Delete', 'End', 'PgDn'],
-            ['↑', '←', '↓', '→']
-        ];
+        // Removed specialLayout as it's now integrated into mainLayout
 
         // Initialize when DOM is ready
         if (document.readyState === 'loading') {
@@ -150,18 +150,6 @@ class VirtualKeyboard {
         const keyboardContent = document.createElement('div');
         keyboardContent.className = 'keyboard-content';
         
-        if (this.showSpecialKeys) {
-            const specialKeysDiv = document.createElement('div');
-            specialKeysDiv.className = 'special-keys';
-            
-            this.specialLayout.forEach(row => {
-                const rowDiv = this.createRow(row);
-                specialKeysDiv.appendChild(rowDiv);
-            });
-            
-            keyboardContent.appendChild(specialKeysDiv);
-        }
-
         const mainKeysDiv = document.createElement('div');
         mainKeysDiv.className = 'main-keys';
         
