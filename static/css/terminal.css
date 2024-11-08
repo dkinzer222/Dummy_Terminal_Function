@@ -1,8 +1,8 @@
 .terminal {
     height: 100%;
-    background-color: #1C2333;
+    background-color: #000000;
     color: #ffffff;
-    font-family: 'Menlo', monospace;
+    font-family: 'Menlo', 'Monaco', monospace;
     padding: 16px;
     display: flex;
     flex-direction: column;
@@ -50,15 +50,18 @@
     font-size: inherit;
     flex: 1;
     outline: none;
+    position: relative;
     caret-color: #ffffff;
 }
 
 .command-input::after {
     content: '';
-    display: inline-block;
-    width: 8px;
-    height: 15px;
-    background: #ffffff;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background-color: #ffffff;
     animation: blink 1s step-end infinite;
 }
 
@@ -130,7 +133,9 @@
 }
 
 @keyframes blink {
+    0% { opacity: 1; }
     50% { opacity: 0; }
+    100% { opacity: 1; }
 }
 
 .keyboard-container {
@@ -197,7 +202,7 @@
 
 .main-content .terminal {
     height: 100%;
-    background-color: #1C2333;
+    background-color: #000000;
     margin: 0;
     border-radius: 8px;
 }
