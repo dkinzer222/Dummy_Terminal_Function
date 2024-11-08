@@ -14,25 +14,26 @@
     flex: 1 1 auto;
 }
 
+.terminal-title {
+    position: relative;
+    z-index: 2;
+}
+
 .matrix-bg {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
+    height: 60px;
     opacity: 0.3;
     z-index: 1;
-}
-
-#progress-tab .matrix-bg {
-    display: block;
+    overflow: hidden;
 }
 
 .matrix-text {
     font-size: 12px;
-    color: #00ff00;
-    text-shadow: 0 0 5px #00ff00;
-    animation: matrix-fall 8s linear infinite, rgb-glow 3s infinite;
+    position: absolute;
+    animation: matrix-fall 4s linear infinite, rgb-glow 3s infinite;
 }
 
 @keyframes matrix-fall {
@@ -41,10 +42,10 @@
 }
 
 @keyframes rgb-glow {
-    0% { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
+    0% { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
     33% { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
-    66% { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
-    100% { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
+    66% { color: #0000ff; text-shadow: 0 0 10px #0000ff; }
+    100% { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
 }
 
 .terminal-output {

@@ -19,9 +19,24 @@ class Keyboard {
         toggleBtn.addEventListener('click', () => this.toggleKeyboard());
     }
 
-    toggleKeyboard() {
-        this.isVisible = !this.isVisible;
-        this.container.classList.toggle('visible', this.isVisible);
+    toggleKeyboard(show) {
+        if (typeof show === 'boolean') {
+            this.isVisible = show;
+        } else {
+            this.isVisible = !this.isVisible;
+        }
+        
+        if (this.container) {
+            this.container.classList.toggle('visible', this.isVisible);
+            
+            // Ensure input focus when keyboard shows
+            if (this.isVisible) {
+                const input = document.querySelector('.command-input');
+                if (input) {
+                    input.focus();
+                }
+            }
+        }
     }
 }
 

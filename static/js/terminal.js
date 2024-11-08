@@ -28,7 +28,15 @@ class Terminal {
     }
 
     setupInput() {
+        if (!this.input) return;
+        
         this.input.addEventListener('focus', () => {
+            if (window.keyboard) {
+                window.keyboard.toggleKeyboard(true);
+            }
+        });
+
+        this.input.addEventListener('click', () => {
             if (window.keyboard) {
                 window.keyboard.toggleKeyboard(true);
             }
