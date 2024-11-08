@@ -105,7 +105,30 @@ class App {
     }
 }
 
-// Initialize app when DOM is loaded
+function createMatrixBackground() {
+    const bg = document.querySelector('.matrix-bg');
+    if (!bg) return;
+
+    const characters = ['D', 'T', 'F', '0', '1'];
+    
+    const createText = () => {
+        const text = document.createElement('div');
+        text.className = 'matrix-text';
+        // Randomly select character from the array
+        text.textContent = characters[Math.floor(Math.random() * characters.length)];
+        text.style.left = Math.random() * 100 + '%';
+        text.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        text.style.fontSize = (Math.random() * 10 + 14) + 'px';
+        bg.appendChild(text);
+        setTimeout(() => text.remove(), 20000);
+    };
+    
+    // Create more characters for denser effect
+    setInterval(createText, 100);
+}
+
+// Initialize app and matrix background when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new App();
+    createMatrixBackground();
 });

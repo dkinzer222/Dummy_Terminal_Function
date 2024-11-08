@@ -49,7 +49,6 @@ class ToolsManager {
             }
         ];
 
-        // Wait for DOM to be ready before initialization
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.initWithRetry());
         } else {
@@ -61,11 +60,13 @@ class ToolsManager {
         try {
             await this.init();
             this.initialized = true;
+            console.log('ToolsManager initialized successfully');
         } catch (error) {
             console.warn(`Failed to initialize ToolsManager (attempt ${this.initializeRetries + 1}):`, error);
             if (this.initializeRetries < this.maxRetries) {
                 this.initializeRetries++;
-                setTimeout(() => this.initWithRetry(), this.retryDelay * this.initializeRetries);
+                const delay = this.retryDelay * Math.pow(2, this.initializeRetries - 1); // Exponential backoff
+                setTimeout(() => this.initWithRetry(), delay);
             } else {
                 console.error('Failed to initialize ToolsManager after maximum retries');
             }
@@ -73,16 +74,22 @@ class ToolsManager {
     }
 
     async init() {
-        await this.setupElements();
-        if (this.toolsGrid && this.toolsToggle) {
-            this.addEventListeners();
+        try {
+            await this.setupElements();
+            if (this.toolsGrid && this.toolsToggle) {
+                this.addEventListeners();
+                this.renderTools();
+            } else {
+                throw new Error('Required elements not found');
+            }
+        } catch (error) {
+            throw new Error(`Initialization failed: ${error.message}`);
         }
     }
 
     async setupElements() {
-        return new Promise((resolve) => {
-            const setupTools = () => {
-                // Find or create tools menu
+        return new Promise((resolve, reject) => {
+            try {
                 this.toolsMenu = document.querySelector('.tools-menu');
                 if (!this.toolsMenu) {
                     const container = document.querySelector('.app-container');
@@ -108,22 +115,9 @@ class ToolsManager {
                     throw new Error('Required tools elements not found');
                 }
 
-                this.renderTools();
                 resolve();
-            };
-
-            try {
-                setupTools();
             } catch (error) {
-                console.warn('Error setting up tools:', error);
-                setTimeout(() => {
-                    try {
-                        setupTools();
-                        resolve();
-                    } catch (retryError) {
-                        console.error('Failed to setup tools after retry:', retryError);
-                    }
-                }, 500);
+                reject(error);
             }
         });
     }
@@ -147,6 +141,7 @@ class ToolsManager {
             this.toolsGrid.innerHTML = toolsHtml;
         } catch (error) {
             console.error('Error rendering tools:', error);
+            throw error;
         }
     }
 
