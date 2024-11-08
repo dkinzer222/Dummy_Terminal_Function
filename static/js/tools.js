@@ -4,7 +4,20 @@ class ToolsManager {
         this.initializeRetries = 0;
         this.maxRetries = 5;
         this.retryDelay = 1000;
+        this.currentMode = 'practice'; // Default mode
         this.tools = [
+            {
+                id: 'terminal-mode',
+                name: 'Terminal Mode',
+                icon: 'bx bx-command',
+                description: 'Switch between Practice, System, and Virtual Linux modes',
+                action: 'mode',
+                modes: [
+                    { id: 'practice', name: 'Practice Mode', description: 'Learn Linux commands safely' },
+                    { id: 'system', name: 'System Mode', description: 'Execute real system commands' },
+                    { id: 'virtual', name: 'Virtual Linux', description: 'Full Linux environment' }
+                ]
+            },
             {
                 id: 'port-scanner',
                 name: 'Port Scanner',
@@ -49,7 +62,6 @@ class ToolsManager {
             }
         ];
 
-        // Start initialization when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => this.initWithRetry(), 100);
@@ -144,14 +156,34 @@ class ToolsManager {
 
             try {
                 requestAnimationFrame(() => {
-                    const toolsHtml = this.tools.map(tool => `
-                        <div class="tool-card" data-action="${tool.action}" id="${tool.id}">
-                            <div class="tool-icon"><i class='${tool.icon}'></i></div>
-                            <div class="tool-name">${tool.name}</div>
-                            <div class="tool-description">${tool.description}</div>
-                            <button class="use-tool-btn">Use Tool</button>
-                        </div>
-                    `).join('');
+                    const toolsHtml = this.tools.map(tool => {
+                        if (tool.id === 'terminal-mode') {
+                            return `
+                                <div class="tool-card mode-selector" data-action="${tool.action}" id="${tool.id}">
+                                    <div class="tool-icon"><i class='${tool.icon}'></i></div>
+                                    <div class="tool-name">${tool.name}</div>
+                                    <div class="tool-description">${tool.description}</div>
+                                    <div class="mode-buttons">
+                                        ${tool.modes.map(mode => `
+                                            <button class="mode-btn ${this.currentMode === mode.id ? 'active' : ''}" 
+                                                    data-mode="${mode.id}"
+                                                    title="${mode.description}">
+                                                ${mode.name}
+                                            </button>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        return `
+                            <div class="tool-card" data-action="${tool.action}" id="${tool.id}">
+                                <div class="tool-icon"><i class='${tool.icon}'></i></div>
+                                <div class="tool-name">${tool.name}</div>
+                                <div class="tool-description">${tool.description}</div>
+                                <button class="use-tool-btn">Use Tool</button>
+                            </div>
+                        `;
+                    }).join('');
 
                     this.toolsGrid.innerHTML = toolsHtml;
                     resolve();
@@ -175,8 +207,15 @@ class ToolsManager {
                     const toolCard = e.target.closest('.tool-card');
                     if (!toolCard) return;
 
+                    const modeBtn = e.target.closest('.mode-btn');
+                    if (modeBtn) {
+                        const mode = modeBtn.dataset.mode;
+                        this.switchMode(mode);
+                        return;
+                    }
+
                     const action = toolCard.dataset.action;
-                    if (action) {
+                    if (action && action !== 'mode') {
                         this.executeTool(action);
                         this.toolsMenu.classList.remove('expanded');
                     }
@@ -201,6 +240,21 @@ class ToolsManager {
 
             resolve();
         });
+    }
+
+    switchMode(mode) {
+        this.currentMode = mode;
+        
+        // Update mode buttons
+        const modeButtons = document.querySelectorAll('.mode-btn');
+        modeButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.mode === mode);
+        });
+
+        // Update terminal mode
+        if (window.terminal) {
+            window.terminal.setMode(mode);
+        }
     }
 
     executeTool(action) {

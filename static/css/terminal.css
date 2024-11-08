@@ -14,6 +14,33 @@
     flex: 1 1 auto;
 }
 
+.mode-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 10;
+    text-transform: uppercase;
+}
+
+.mode-indicator.practice {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.mode-indicator.system {
+    background-color: #f44336;
+    color: white;
+}
+
+.mode-indicator.virtual {
+    background-color: #2196F3;
+    color: white;
+}
+
 .terminal-output {
     flex: 1 1 auto;
     overflow-y: auto;
@@ -21,6 +48,7 @@
     position: relative;
     z-index: 2;
     background-color: rgba(26, 29, 38, 0.95);
+    margin-top: 30px;
 }
 
 @keyframes matrix-fall {
@@ -56,6 +84,24 @@
     animation: rgb-glow 3s infinite;
 }
 
+.terminal-line.error {
+    color: #ff4444;
+    text-shadow: 0 0 5px #ff4444;
+}
+
+.terminal-line.success {
+    color: #00ff00;
+}
+
+.terminal-line.system {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.terminal-line.help {
+    color: #ffeb3b;
+}
+
 .terminal-line.new-command {
     animation: command-popup 0.3s ease forwards;
 }
@@ -79,10 +125,7 @@
 }
 
 .command-container {
-    position: absolute;
-    bottom: 30vh;
-    left: 0;
-    right: 0;
+    position: relative;
     background-color: rgba(26, 29, 38, 0.95);
     padding: 10px;
     z-index: 1001;
@@ -116,6 +159,32 @@
     outline: none;
     font-size: 14px;
     caret-color: var(--accent-color);
+}
+
+.mode-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    background: rgba(107, 94, 217, 0.1);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mode-btn:hover {
+    background: rgba(107, 94, 217, 0.2);
+}
+
+.mode-btn.active {
+    background: var(--primary-color);
+    color: white;
 }
 
 .keyboard-container {
@@ -173,6 +242,10 @@
 @media (max-width: 768px) {
     .terminal {
         height: calc(100vh - 240px);
+    }
+    
+    .mode-buttons {
+        flex-direction: column;
     }
 }
 

@@ -2,6 +2,25 @@ class Terminal {
     constructor() {
         this.glowTimeout = null;
         this.commandCount = 0;
+        this.mode = 'practice'; // Default mode
+        this.commandHistory = [];
+        this.historyIndex = -1;
+        this.mockFs = {
+            '/': {
+                'home': {
+                    'user': {
+                        'documents': {},
+                        'downloads': {},
+                        'desktop': {}
+                    }
+                },
+                'usr': {
+                    'bin': {},
+                    'local': {}
+                }
+            }
+        };
+        this.currentPath = '/home/user';
         this.init();
     }
 
@@ -19,6 +38,7 @@ class Terminal {
             this.setupInput();
             this.addEventListeners();
             this.setupMatrixBackground();
+            this.showWelcomeMessage();
         }
     }
 
@@ -26,6 +46,12 @@ class Terminal {
         this.terminal = document.querySelector('.terminal');
         this.output = document.querySelector('.terminal-output');
         this.input = document.querySelector('.command-input');
+        
+        // Add mode indicator
+        this.modeIndicator = document.createElement('div');
+        this.modeIndicator.className = 'mode-indicator practice';
+        this.modeIndicator.innerHTML = 'Practice Mode';
+        this.terminal.insertBefore(this.modeIndicator, this.terminal.firstChild);
         
         // Add resize handle
         const resizeHandle = document.createElement('div');
@@ -58,6 +84,27 @@ class Terminal {
         }
     }
 
+    setMode(mode) {
+        this.mode = mode;
+        this.modeIndicator.className = `mode-indicator ${mode}`;
+        this.modeIndicator.innerHTML = `${mode.charAt(0).toUpperCase() + mode.slice(1)} Mode`;
+        this.showModeMessage();
+    }
+
+    showModeMessage() {
+        const messages = {
+            practice: 'Practice Mode: Safe environment for learning Linux commands. Type "help" for available commands.',
+            system: 'System Mode: Execute real system commands. Be cautious!',
+            virtual: 'Virtual Linux Mode: Full Linux environment simulation.'
+        };
+        this.write(messages[this.mode], 'system');
+    }
+
+    showWelcomeMessage() {
+        this.write('Network Security Toolkit v1.0', 'system');
+        this.write('Type "help" for available commands', 'system');
+    }
+
     updateGlowEffects(type, intensity) {
         const progressTab = document.querySelector('[data-tab="progress"]');
         const outputTab = document.querySelector('[data-tab="output"]');
@@ -76,7 +123,6 @@ class Terminal {
                 break;
         }
 
-        // Reset glow after inactivity
         clearTimeout(this.glowTimeout);
         this.glowTimeout = setTimeout(() => {
             progressTab.className = 'tab-button' + (progressTab.classList.contains('active') ? ' active' : '');
@@ -105,6 +151,148 @@ class Terminal {
         this.input.addEventListener('input', () => {
             this.updateGlowEffects('typing', 1);
         });
+
+        // Add command history navigation
+        this.input.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                this.navigateHistory('up');
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                this.navigateHistory('down');
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                this.handleTabCompletion();
+            }
+        });
+    }
+
+    navigateHistory(direction) {
+        if (this.commandHistory.length === 0) return;
+
+        if (direction === 'up') {
+            this.historyIndex = Math.min(this.historyIndex + 1, this.commandHistory.length - 1);
+        } else {
+            this.historyIndex = Math.max(this.historyIndex - 1, -1);
+        }
+
+        if (this.historyIndex >= 0) {
+            this.input.value = this.commandHistory[this.commandHistory.length - 1 - this.historyIndex];
+        } else {
+            this.input.value = '';
+        }
+    }
+
+    handleTabCompletion() {
+        const input = this.input.value;
+        const commands = {
+            practice: ['help', 'ls', 'cd', 'pwd', 'echo', 'cat', 'mkdir', 'touch', 'rm', 'clear'],
+            system: ['ls', 'pwd', 'whoami', 'date', 'ps', 'df', 'free', 'uptime', 'uname'],
+            virtual: ['ls', 'cd', 'pwd', 'vim', 'nano', 'gcc', 'python', 'node', 'npm', 'git']
+        };
+
+        const matches = commands[this.mode].filter(cmd => cmd.startsWith(input));
+        if (matches.length === 1) {
+            this.input.value = matches[0];
+        } else if (matches.length > 1) {
+            this.write(matches.join('  '), 'system');
+        }
+    }
+
+    async executeCommand(command) {
+        if (!command.trim()) return;
+
+        // Add to history
+        this.commandHistory.push(command);
+        this.historyIndex = -1;
+
+        // Display command
+        const output = document.createElement('div');
+        output.className = 'terminal-line output new-command';
+        output.textContent = `$ ${command}`;
+        this.output.appendChild(output);
+
+        // Process command based on mode
+        switch (this.mode) {
+            case 'practice':
+                this.executePracticeCommand(command);
+                break;
+            case 'system':
+                await this.executeSystemCommand(command);
+                break;
+            case 'virtual':
+                this.executeVirtualCommand(command);
+                break;
+        }
+
+        // Clear input and scroll
+        this.input.value = '';
+        this.output.scrollTop = this.output.scrollHeight;
+        this.updateGlowEffects('command', 2);
+    }
+
+    executePracticeCommand(command) {
+        const [cmd, ...args] = command.trim().split(' ');
+
+        switch (cmd) {
+            case 'help':
+                this.write(`Available commands: help, ls, cd, pwd, echo, cat, mkdir, touch, rm, clear
+Use TAB for command completion and arrow keys for command history.`, 'help');
+                break;
+            case 'ls':
+                this.write('Documents  Downloads  Desktop', 'success');
+                break;
+            case 'pwd':
+                this.write(this.currentPath, 'success');
+                break;
+            case 'cd':
+                if (args[0] === '..') {
+                    this.currentPath = this.currentPath.split('/').slice(0, -1).join('/') || '/';
+                } else if (args[0]) {
+                    this.currentPath += '/' + args[0];
+                }
+                break;
+            case 'clear':
+                this.output.innerHTML = '';
+                break;
+            default:
+                this.write(`Command '${cmd}' not found. Type 'help' for available commands.`, 'error');
+        }
+    }
+
+    async executeSystemCommand(command) {
+        try {
+            const response = await fetch('/api/system', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command })
+            });
+
+            const result = await response.json();
+            
+            if (result.error) {
+                this.write(result.message, 'error');
+            } else {
+                if (result.output) this.write(result.output, 'success');
+                if (result.error_output) this.write(result.error_output, 'error');
+            }
+        } catch (error) {
+            this.write('Error executing system command: ' + error.message, 'error');
+        }
+    }
+
+    executeVirtualCommand(command) {
+        // Simulate virtual Linux environment
+        this.write(`Simulating: ${command}`, 'system');
+        this.write('Virtual Linux environment is under development.', 'system');
+    }
+
+    write(text, type = 'output') {
+        const line = document.createElement('div');
+        line.className = `terminal-line ${type}`;
+        line.textContent = text;
+        this.output.appendChild(line);
+        this.output.scrollTop = this.output.scrollHeight;
     }
 
     setupMatrixBackground() {
@@ -132,38 +320,6 @@ class Terminal {
                 }
             }
         }, 100);
-    }
-
-    executeCommand(command) {
-        // Display in output section with animation
-        const output = document.createElement('div');
-        output.className = 'terminal-line output new-command';
-        output.textContent = command;
-        this.output.appendChild(output);
-        
-        // Auto-scroll
-        this.output.scrollTop = this.output.scrollHeight;
-        
-        // Update glow effects
-        this.updateGlowEffects('command', 2);
-    }
-
-    write(text, type = 'output') {
-        const line = document.createElement('div');
-        line.className = `terminal-line ${type}`;
-        line.textContent = text;
-        this.output.appendChild(line);
-        this.output.scrollTop = this.output.scrollHeight;
-    }
-
-    addEventListeners() {
-        if (!this.input) return;
-
-        this.input.addEventListener('click', () => {
-            if (window.keyboard) {
-                window.keyboard.toggleKeyboard(true);
-            }
-        });
     }
 }
 
