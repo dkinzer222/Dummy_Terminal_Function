@@ -35,12 +35,16 @@ body {
     padding: 1rem;
     border-bottom: 1px solid var(--border-color);
     background-color: var(--terminal-bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .header-left {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex: 1;
 }
 
 .header-left i {
@@ -50,6 +54,9 @@ body {
 .header-left span {
     font-size: 1.1rem;
     font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .header-right i {
@@ -61,10 +68,13 @@ body {
     padding: 0.5rem;
     gap: 0.5rem;
     background-color: var(--terminal-bg);
+    position: sticky;
+    top: 60px;
+    z-index: 99;
 }
 
 .tab-button {
-    flex: 1;
+    flex: 1 1 auto;
     padding: 0.75rem;
     background: none;
     border: none;
@@ -85,6 +95,7 @@ body {
     display: flex;
     flex-direction: column;
     background-color: var(--terminal-bg);
+    position: relative;
 }
 
 .tab-content {
@@ -95,122 +106,91 @@ body {
 .tab-content.active {
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 1 1 auto;
 }
 
-.terminal-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.preview-container {
-    text-align: center;
-    padding: 2rem 1rem;
-}
-
-.preview-container i {
-    font-size: 3rem;
-    color: var(--primary-color);
-    margin-bottom: 1rem;
-}
-
-.preview-container h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-.network-tool {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background-color: rgba(107, 94, 217, 0.1);
-    border-radius: 0.5rem;
-    margin: 1rem 0;
-}
-
-.tool-modal {
-    display: none;
+.tools-menu {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    right: 0;
+    background-color: rgba(26, 29, 38, 0.95);
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
     z-index: 1000;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.modal-content {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background-color: var(--background-color);
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
+.tools-menu.expanded {
+    transform: translateY(0);
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
     padding: 1rem;
-    animation: slideUp 0.3s ease-out;
+    max-height: 70vh;
+    overflow-y: auto;
 }
 
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.close-modal {
-    background: none;
-    border: none;
-    color: var(--text-color);
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(100%);
-    }
-    to {
-        transform: translateY(0);
-    }
-}
-
-.loading {
-    display: inline-block;
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 2px solid rgba(107, 94, 217, 0.3);
-    border-radius: 50%;
-    border-top-color: var(--primary-color);
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.error-message {
-    color: var(--error-color);
-    padding: 0.75rem;
+.tool-card {
+    background-color: rgba(107, 94, 217, 0.1);
     border-radius: 0.5rem;
-    background-color: rgba(255, 75, 75, 0.1);
-    margin: 0.5rem 0;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: transform 0.2s, background-color 0.2s;
 }
 
-@media (hover: none) {
-    .tab-button:active {
-        background-color: rgba(107, 94, 217, 0.2);
-    }
-    
-    .tab-button.active:active {
-        background-color: var(--primary-color);
-    }
+.tool-card:hover {
+    transform: translateY(-2px);
+    background-color: rgba(107, 94, 217, 0.2);
+}
+
+.tool-icon {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.tool-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.tool-description {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    flex-grow: 1;
+}
+
+.use-tool-btn {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.use-tool-btn:hover {
+    background-color: rgba(107, 94, 217, 0.8);
 }
 
 @media (max-width: 768px) {
+    .tools-grid {
+        grid-template-columns: 1fr;
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+
+    .tool-card {
+        padding: 0.75rem;
+    }
+
     .header-left span {
         font-size: 1rem;
     }
@@ -218,5 +198,23 @@ body {
     .tab-button {
         font-size: 0.9rem;
         padding: 0.6rem;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .tools-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1025px) {
+    .tools-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tool-card {
+        transition: none;
     }
 }

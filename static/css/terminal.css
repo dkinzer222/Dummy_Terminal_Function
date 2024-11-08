@@ -1,10 +1,43 @@
-[Previous terminal.css content...]
+.terminal {
+    height: calc(100vh - 200px);
+    background-color: rgba(26, 29, 38, 0.95);
+    color: var(--text-color);
+    font-family: 'Courier New', monospace;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    flex: 1 1 auto;
+}
+
+.matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.95);
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+    opacity: 0.3;
+}
 
 .matrix-text {
     position: absolute;
     font-family: 'Courier New', monospace;
-    font-size: 20px;
-    animation: matrix-fall 20s linear infinite, rgb-glow 3s infinite;
+    font-size: 12px;
+    animation: matrix-fall 8s linear infinite, rgb-glow 3s infinite;
+    opacity: 0.8;
+}
+
+@keyframes matrix-fall {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
 }
 
 @keyframes rgb-glow {
@@ -14,4 +47,58 @@
     100% { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
 }
 
-[Rest of terminal.css content...]
+.terminal-output {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 10px;
+    margin: -5px -10px;
+    position: relative;
+    z-index: 2;
+}
+
+.terminal-input {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    margin-top: 10px;
+    position: relative;
+    z-index: 3;
+}
+
+.prompt {
+    color: var(--accent-color);
+    margin-right: 10px;
+    font-weight: bold;
+    text-shadow: 0 0 5px var(--accent-color);
+}
+
+.command-input {
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-family: 'Courier New', monospace;
+    flex: 1 1 auto;
+    outline: none;
+    font-size: 14px;
+    caret-color: var(--accent-color);
+}
+
+@media (max-width: 768px) {
+    .terminal {
+        height: calc(100vh - 240px);
+    }
+    
+    .matrix-text {
+        font-size: 10px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .terminal,
+    .matrix-text {
+        transition: none;
+        animation: none;
+    }
+}

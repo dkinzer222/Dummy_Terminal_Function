@@ -114,17 +114,17 @@ function createMatrixBackground() {
     const createText = () => {
         const text = document.createElement('div');
         text.className = 'matrix-text';
-        // Randomly select character from the array
         text.textContent = characters[Math.floor(Math.random() * characters.length)];
         text.style.left = Math.random() * 100 + '%';
-        text.style.animationDuration = (Math.random() * 10 + 10) + 's';
-        text.style.fontSize = (Math.random() * 10 + 14) + 'px';
+        text.style.animationDuration = (Math.random() * 5 + 3) + 's';
+        text.style.opacity = Math.random() * 0.3 + 0.5;
+        text.style.transform = `scale(${Math.random() * 0.5 + 0.5})`;
         bg.appendChild(text);
-        setTimeout(() => text.remove(), 20000);
+        setTimeout(() => text.remove(), 8000);
     };
     
-    // Create more characters for denser effect
-    setInterval(createText, 100);
+    // Create characters more frequently for denser effect
+    setInterval(createText, 50);
 }
 
 // Initialize app and matrix background when DOM is loaded
