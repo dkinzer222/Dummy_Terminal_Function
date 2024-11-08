@@ -40,7 +40,16 @@
 }
 
 .terminal-line.command {
+    color: #00ff00;
+    font-weight: bold;
+}
+
+.terminal-line.system-command {
     animation: rgb-glow 3s infinite;
+    font-family: 'Monaco', 'Consolas', monospace;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .terminal-line.system-output {
@@ -49,6 +58,13 @@
     padding: 4px 8px;
     border-radius: 4px;
     font-family: 'Monaco', 'Consolas', monospace;
+}
+
+.terminal-line.error {
+    color: #ff0000;
+    background-color: rgba(255, 0, 0, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
 }
 
 .terminal-input {
@@ -192,10 +208,10 @@
 }
 
 @keyframes rgb-glow {
-    0% { text-shadow: 0 0 10px #ff0000; }
-    33% { text-shadow: 0 0 10px #00ff00; }
-    66% { text-shadow: 0 0 10px #0000ff; }
-    100% { text-shadow: 0 0 10px #ff0000; }
+    0% { text-shadow: 0 0 10px #ff0000; color: #ff5555; }
+    33% { text-shadow: 0 0 10px #00ff00; color: #55ff55; }
+    66% { text-shadow: 0 0 10px #0000ff; color: #5555ff; }
+    100% { text-shadow: 0 0 10px #ff0000; color: #ff5555; }
 }
 
 /* Mobile Responsiveness */

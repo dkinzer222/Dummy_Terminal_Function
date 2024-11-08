@@ -29,6 +29,12 @@ class Terminal {
         this.input = document.querySelector('.command-input');
         this.history = [];
         this.historyIndex = -1;
+        
+        this.allowedSystemCommands = [
+            'ls', 'pwd', 'whoami', 'date', 'ps', 
+            'df', 'free', 'uptime', 'uname'
+        ];
+
         this.commandHandlers = {
             'help': () => this.showHelp(),
             'clear': () => this.clear(),
@@ -64,15 +70,45 @@ class Terminal {
         header.querySelector('.maximize-btn').addEventListener('click', () => this.toggleMaximize());
     }
 
+    toggleMinimize() {
+        this.terminal.classList.toggle('minimized');
+        const minimizeBtn = this.terminal.querySelector('.minimize-btn i');
+        minimizeBtn.classList.toggle('bx-minus');
+        minimizeBtn.classList.toggle('bx-plus');
+    }
+
+    toggleMaximize() {
+        this.terminal.classList.toggle('maximized');
+        const maximizeBtn = this.terminal.querySelector('.maximize-btn i');
+        maximizeBtn.classList.toggle('bx-expand');
+        maximizeBtn.classList.toggle('bx-collapse');
+    }
+
     welcomeMessage() {
         this.write('Network Security Toolkit v1.0');
         this.write('Type "help" for available commands');
         this.write('');
     }
 
-    write(text, isCommand = false, isSystemOutput = false) {
+    write(text, type = 'default') {
         const line = document.createElement('div');
-        line.className = `terminal-line${isCommand ? ' command' : ''}${isSystemOutput ? ' system-output' : ''}`;
+        line.className = 'terminal-line';
+        
+        switch(type) {
+            case 'command':
+                line.classList.add('command');
+                break;
+            case 'system-command':
+                line.classList.add('system-command');
+                break;
+            case 'system-output':
+                line.classList.add('system-output');
+                break;
+            case 'error':
+                line.classList.add('error');
+                break;
+        }
+        
         line.textContent = text;
         this.output.appendChild(line);
         this.output.scrollTop = this.output.scrollHeight;
@@ -81,7 +117,6 @@ class Terminal {
     addEventListeners() {
         if (!this.input) return;
 
-        // Physical keyboard input handling
         this.input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const command = this.input.value.trim();
@@ -110,7 +145,6 @@ class Terminal {
             }
         });
 
-        // Input focus handling
         this.input.addEventListener('focus', () => {
             const keyboard = document.querySelector('.keyboard-container');
             if (keyboard && !keyboard.classList.contains('visible')) {
@@ -118,7 +152,6 @@ class Terminal {
             }
         });
 
-        // Click handling for keyboard visibility
         this.terminal.addEventListener('click', (e) => {
             if (e.target.closest('.terminal-input')) {
                 this.input.focus();
@@ -126,28 +159,14 @@ class Terminal {
         });
     }
 
-    toggleMinimize() {
-        this.terminal.classList.toggle('minimized');
-        const minimizeBtn = this.terminal.querySelector('.minimize-btn i');
-        minimizeBtn.classList.toggle('bx-minus');
-        minimizeBtn.classList.toggle('bx-plus');
-    }
-
-    toggleMaximize() {
-        this.terminal.classList.toggle('maximized');
-        const maximizeBtn = this.terminal.querySelector('.maximize-btn i');
-        maximizeBtn.classList.toggle('bx-expand');
-        maximizeBtn.classList.toggle('bx-collapse');
-    }
-
-    executeCommand(command) {
-        this.write(`$ ${command}`, true);
-        const [cmd, ...args] = command.split(' ');
+    async executeCommand(command) {
+        this.write(`$ ${command}`, 'command');
+        const [cmd, ...args] = command.toLowerCase().split(' ');
         
         if (this.commandHandlers[cmd]) {
-            this.commandHandlers[cmd](args);
+            await this.commandHandlers[cmd](args);
         } else {
-            this.write(`Command not found: ${cmd}`);
+            this.write(`Command not found: ${cmd}`, 'error');
         }
     }
 
@@ -231,12 +250,22 @@ class Terminal {
     }
 
     async executeSystemCommand(args) {
-        if (!args.length) {
-            this.write('Usage: system <command>');
+        if (!args || args.length === 0) {
+            this.write('Usage: system <command>', 'error');
+            this.write('Allowed commands: ' + this.allowedSystemCommands.join(', '), 'error');
             return;
         }
 
         const command = args.join(' ');
+        const baseCommand = args[0].toLowerCase();
+
+        if (!this.allowedSystemCommands.includes(baseCommand)) {
+            this.write(`Error: Command '${baseCommand}' not allowed`, 'error');
+            return;
+        }
+
+        this.write(`Executing: ${command}`, 'system-command');
+
         try {
             const response = await fetch('/api/system', {
                 method: 'POST',
@@ -249,27 +278,31 @@ class Terminal {
             const data = await response.json();
             
             if (data.error) {
-                this.write(`Error: ${data.message}`, false, true);
+                this.write(`Error: ${data.message}`, 'error');
                 return;
             }
 
             if (data.output) {
-                this.write(data.output.trim(), false, true);
+                data.output.trim().split('\n').forEach(line => {
+                    this.write(line, 'system-output');
+                });
             }
 
             if (data.error_output) {
-                this.write(data.error_output.trim(), false, true);
+                data.error_output.trim().split('\n').forEach(line => {
+                    this.write(line, 'error');
+                });
             }
 
             if (data.exit_code !== 0) {
-                this.write(`Command exited with code ${data.exit_code}`, false, true);
+                this.write(`Command exited with code ${data.exit_code}`, 'error');
             }
         } catch (err) {
-            this.write(`Error executing command: ${err.message}`, false, true);
+            this.write(`Error executing command: ${err.message}`, 'error');
         }
     }
 
-    dnsLookup() {
+    dnsLookup(args) {
         this.write('DNS lookup functionality not implemented');
     }
 
@@ -277,12 +310,11 @@ class Terminal {
         this.write('Speed test functionality not implemented');
     }
 
-    sslCheck() {
+    sslCheck(args) {
         this.write('SSL check functionality not implemented');
     }
 }
 
-// Initialize terminal when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         window.terminal = new Terminal();
