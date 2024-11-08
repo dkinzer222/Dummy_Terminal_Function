@@ -3,7 +3,7 @@ class VirtualKeyboard {
         this.container = document.querySelector('.keyboard-container');
         this.input = document.querySelector('.command-input');
         this.terminal = document.querySelector('.terminal');
-        this.isCollapsed = false;
+        this.isCollapsed = true;
         this.showSpecialKeys = false;
         
         // Main keyboard layout
@@ -29,6 +29,7 @@ class VirtualKeyboard {
 
     init() {
         this.createKeyboardContainer();
+        this.createKeyboardToggle();
         this.render();
         this.addEventListeners();
     }
@@ -40,33 +41,31 @@ class VirtualKeyboard {
             document.body.appendChild(this.container);
         }
 
-        // Add keyboard controls
         const controls = document.createElement('div');
         controls.className = 'keyboard-controls';
         
-        // Terminal toggle button
         const toggleTerminal = document.createElement('button');
         toggleTerminal.className = 'keyboard-control-btn';
         toggleTerminal.innerHTML = '<i class="bx bx-terminal"></i> Terminal';
         toggleTerminal.onclick = () => this.toggleTerminal();
 
-        // Special keys toggle
         const toggleSpecialKeys = document.createElement('button');
         toggleSpecialKeys.className = 'keyboard-control-btn';
         toggleSpecialKeys.innerHTML = '<i class="bx bx-chevron-down"></i> Special';
         toggleSpecialKeys.onclick = () => this.toggleSpecialKeys();
 
-        // Keyboard toggle
-        const toggleKeyboard = document.createElement('button');
-        toggleKeyboard.className = 'keyboard-control-btn';
-        toggleKeyboard.innerHTML = '<i class="bx bx-keyboard"></i>';
-        toggleKeyboard.onclick = () => this.toggleKeyboard();
-
         controls.appendChild(toggleTerminal);
         controls.appendChild(toggleSpecialKeys);
-        controls.appendChild(toggleKeyboard);
         
         this.container.appendChild(controls);
+    }
+
+    createKeyboardToggle() {
+        const toggle = document.createElement('button');
+        toggle.className = 'keyboard-toggle';
+        toggle.innerHTML = '<i class="bx bx-chevron-up"></i> Keyboard';
+        toggle.onclick = () => this.toggleKeyboard();
+        document.body.appendChild(toggle);
     }
 
     toggleTerminal() {
@@ -89,11 +88,10 @@ class VirtualKeyboard {
     }
 
     toggleKeyboard() {
-        this.isCollapsed = !this.isCollapsed;
-        this.container.classList.toggle('collapsed');
-        const btn = this.container.querySelectorAll('.keyboard-control-btn')[2];
-        const icon = btn.querySelector('i');
-        icon.classList.toggle('bx-keyboard');
+        this.container.classList.toggle('visible');
+        const toggle = document.querySelector('.keyboard-toggle');
+        const icon = toggle.querySelector('i');
+        icon.classList.toggle('bx-chevron-up');
         icon.classList.toggle('bx-chevron-down');
     }
 

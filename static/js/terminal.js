@@ -36,9 +36,14 @@ class Terminal {
             'ssl': (args) => this.sslCheck(args)
         };
 
-        // Ensure input is readonly by default
         if (this.input) {
             this.input.setAttribute('readonly', true);
+            this.input.addEventListener('focus', () => {
+                const keyboard = document.querySelector('.keyboard-container');
+                if (keyboard) {
+                    keyboard.classList.add('visible');
+                }
+            });
         }
     }
 
@@ -84,9 +89,9 @@ class Terminal {
         this.write('');
     }
 
-    write(text, className = '') {
+    write(text, isCommand = false) {
         const line = document.createElement('div');
-        line.className = `terminal-line ${className}`;
+        line.className = `terminal-line${isCommand ? ' command' : ''}`;
         line.textContent = text;
         this.output.appendChild(line);
         this.output.scrollTop = this.output.scrollHeight;
@@ -95,9 +100,7 @@ class Terminal {
     addEventListeners() {
         if (!this.input) return;
 
-        // Handle physical keyboard events
         this.input.addEventListener('keydown', (e) => {
-            // Only handle physical keyboard events
             if (!e.isTrusted) return;
 
             this.usingPhysicalKeyboard = true;
@@ -128,22 +131,29 @@ class Terminal {
                 }
             }
 
-            // Set readonly back after a short delay
             setTimeout(() => {
                 this.usingPhysicalKeyboard = false;
                 this.input.setAttribute('readonly', true);
             }, 100);
         });
 
-        // Prevent default mobile keyboard
         this.input.addEventListener('touchstart', (e) => {
             e.preventDefault();
             this.input.blur();
         });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.keyboard-container') && !e.target.closest('.command-input')) {
+                const keyboard = document.querySelector('.keyboard-container');
+                if (keyboard) {
+                    keyboard.classList.remove('visible');
+                }
+            }
+        });
     }
 
     executeCommand(command) {
-        this.write(`$ ${command}`, 'command');
+        this.write(`$ ${command}`, true);
         const [cmd, ...args] = command.split(' ');
         
         if (this.commandHandlers[cmd]) {

@@ -33,10 +33,14 @@
 }
 
 .terminal-line {
-    animation: rgb-glow 3s infinite;
+    color: #ffffff;
     margin: 2px 0;
     white-space: pre-wrap;
     word-break: break-all;
+}
+
+.terminal-line.command {
+    animation: rgb-glow 3s infinite;
 }
 
 .terminal-input {
@@ -69,12 +73,13 @@
     left: 0;
     right: 0;
     background-color: #1f1f1f;
+    transform: translateY(100%);
     transition: transform 0.3s ease;
     z-index: 1000;
 }
 
-.keyboard-container.collapsed {
-    transform: translateY(100%);
+.keyboard-container.visible {
+    transform: translateY(0);
 }
 
 .keyboard-controls {
@@ -98,6 +103,23 @@
 
 .keyboard-control-btn i {
     font-size: 14px;
+}
+
+.keyboard-toggle {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f1f1f;
+    border: none;
+    color: var(--text-color);
+    padding: 6px 12px;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .keyboard-content {
