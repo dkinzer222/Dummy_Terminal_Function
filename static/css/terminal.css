@@ -15,16 +15,15 @@
 }
 
 .matrix-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.95);
-    z-index: 1;
-    pointer-events: none;
-    overflow: hidden;
-    opacity: 0.3;
+    display: none; /* Hide by default */
+}
+
+#progress-tab .matrix-bg {
+    display: block; /* Show only in progress tab */
+}
+
+#output-tab {
+    background-color: #000; /* Black background for output */
 }
 
 .matrix-text {
@@ -90,17 +89,17 @@
     bottom: 0;
     left: 0;
     right: 0;
+    height: 25vh; /* Set to 25% of viewport height */
     background-color: rgba(31, 31, 31, 0.95);
-    transform: translateY(100%) scale(0.8);
-    transform-origin: bottom center;
+    transform: translateY(100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .keyboard-container.visible {
-    transform: translateY(0) scale(0.8);
+    transform: translateY(0);
 }
 
 .keyboard-controls {
@@ -160,10 +159,6 @@
 @media (max-width: 768px) {
     .terminal {
         height: calc(100vh - 240px);
-    }
-    
-    .matrix-text {
-        font-size: 10px;
     }
 }
 
