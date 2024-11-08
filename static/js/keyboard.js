@@ -1,12 +1,12 @@
 class VirtualKeyboard {
     constructor() {
         this.container = document.querySelector('.keyboard-container');
-        this.input = document.querySelector('.message-input');
+        this.input = document.querySelector('.command-input');
         this.layout = [
-            ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-            ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-            ['⇧', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '⌫'],
-            ['123', '😊', 'space', 'return', '🎤']
+            ['✄', '□', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '←', '→'],
+            ['✎', 'B', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', '!', '?'],
+            ['↩', '🎤', '⇧', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '⌫', '.', ','],
+            ['🌐', '123', 'space', 'return', '⌨']
         ];
         this.isShift = false;
         this.isNumeric = false;
@@ -25,7 +25,7 @@ class VirtualKeyboard {
                     let className = 'key';
                     if (key === 'space') className += ' space-key';
                     if (key === 'return') className += ' return-key';
-                    if (key === '😊' || key === '🎤') className += ' special-key';
+                    if (key === '🌐' || key === '🎤' || key === '⌨') className += ' special-key';
                     if (key === '⇧' || key === '⌫' || key === '123') className += ' system-key';
                     return `<button class="${className}" data-key="${key}">
                         ${key === 'space' ? '' : key}
@@ -53,11 +53,16 @@ class VirtualKeyboard {
             case '123':
                 this.toggleNumericKeyboard();
                 break;
-            case '😊':
-                // Emoji picker would go here
+            case '←':
+                this.moveCursor(-1);
                 break;
+            case '→':
+                this.moveCursor(1);
+                break;
+            case '🌐':
             case '🎤':
-                // Voice input would go here
+            case '⌨':
+                // Special keys functionality would go here
                 break;
             default:
                 if (key.length === 1) {
@@ -69,6 +74,11 @@ class VirtualKeyboard {
                 }
         }
         this.input.focus();
+    }
+
+    moveCursor(direction) {
+        const pos = this.input.selectionStart;
+        this.input.selectionStart = this.input.selectionEnd = pos + direction;
     }
 
     handleBackspace() {
@@ -83,6 +93,8 @@ class VirtualKeyboard {
             this.input.value = this.input.value.slice(0, start) + this.input.value.slice(end);
             this.input.selectionStart = this.input.selectionEnd = start;
         }
+        const event = new Event('input');
+        this.input.dispatchEvent(event);
     }
 
     insertText(text) {
@@ -90,6 +102,8 @@ class VirtualKeyboard {
         const end = this.input.selectionEnd;
         this.input.value = this.input.value.slice(0, start) + text + this.input.value.slice(end);
         this.input.selectionStart = this.input.selectionEnd = start + text.length;
+        const event = new Event('input');
+        this.input.dispatchEvent(event);
     }
 
     handleReturn() {
@@ -101,7 +115,7 @@ class VirtualKeyboard {
         const keys = this.container.querySelectorAll('.key:not(.special-key):not(.system-key)');
         keys.forEach(key => {
             const keyText = key.textContent.trim();
-            if (keyText.length === 1) {
+            if (keyText.length === 1 && keyText.match(/[a-zA-Z]/)) {
                 key.textContent = this.isShift ? keyText.toUpperCase() : keyText.toLowerCase();
             }
         });
