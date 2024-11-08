@@ -97,7 +97,16 @@
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
     padding: 8px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    max-height: 30vh;
+    overflow-y: auto;
+}
+
+.keyboard-container.draggable {
+    cursor: move;
+    resize: both;
+    overflow: auto;
+    min-width: 200px;
+    min-height: 100px;
 }
 
 .keyboard-container.visible {
@@ -107,15 +116,15 @@
 .keyboard-row {
     display: flex;
     justify-content: center;
-    gap: 4px;
-    margin-bottom: 4px;
+    gap: 2px;
+    margin-bottom: 2px;
 }
 
 .key {
-    height: 40px;
-    min-width: 40px;
-    font-size: 14px;
-    padding: 4px 8px;
+    height: 30px;
+    min-width: 30px;
+    font-size: 12px;
+    padding: 2px 4px;
     background-color: rgba(45, 45, 45, 0.95);
     border: none;
     border-radius: 4px;
@@ -135,17 +144,32 @@
 }
 
 .key.modifier-key {
-    min-width: 70px;
+    min-width: 50px;
 }
 
 .key.space-key {
-    min-width: 200px;
+    min-width: 120px;
 }
 
 .key:active {
     transform: translateY(1px);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     background-color: rgba(60, 60, 60, 0.95);
+}
+
+.keyboard-lock {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.keyboard-lock:hover {
+    opacity: 1;
 }
 
 @media (max-width: 768px) {
@@ -159,9 +183,18 @@
     }
     
     .key {
-        height: 35px;
-        min-width: 35px;
-        font-size: 12px;
+        height: 25px;
+        min-width: 25px;
+        font-size: 11px;
+        padding: 1px 2px;
+    }
+
+    .key.space-key {
+        min-width: 80px;
+    }
+
+    .key.modifier-key {
+        min-width: 40px;
     }
 }
 

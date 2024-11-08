@@ -2,6 +2,8 @@ class Keyboard {
     constructor() {
         this.container = document.querySelector('.keyboard-container');
         this.isVisible = false;
+        this.isLocked = true;
+        this.isDragging = false;
         this.keyboardLayout = [
             // Function key row
             ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'],
@@ -18,6 +20,7 @@ class Keyboard {
         ];
         this.setupKeyboard();
         this.setupToggleButton();
+        this.setupDraggable();
     }
 
     setupKeyboard() {
@@ -38,6 +41,62 @@ class Keyboard {
                 const key = keyButton.dataset.key;
                 this.onKeyPress(key);
             }
+        });
+    }
+
+    setupDraggable() {
+        const lockBtn = document.createElement('button');
+        lockBtn.className = 'keyboard-lock';
+        lockBtn.innerHTML = '🔒';
+        lockBtn.style.position = 'absolute';
+        lockBtn.style.right = '10px';
+        lockBtn.style.top = '10px';
+        this.container.appendChild(lockBtn);
+
+        lockBtn.addEventListener('click', () => {
+            this.isLocked = !this.isLocked;
+            lockBtn.innerHTML = this.isLocked ? '🔒' : '🔓';
+            this.container.classList.toggle('draggable', !this.isLocked);
+        });
+
+        this.container.addEventListener('mousedown', (e) => {
+            if (this.isLocked) return;
+            this.isDragging = true;
+            this.dragStart = {
+                x: e.clientX - this.container.offsetLeft,
+                y: e.clientY - this.container.offsetTop
+            };
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!this.isDragging) return;
+            this.container.style.left = (e.clientX - this.dragStart.x) + 'px';
+            this.container.style.top = (e.clientY - this.dragStart.y) + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            this.isDragging = false;
+        });
+
+        // Add touch support
+        this.container.addEventListener('touchstart', (e) => {
+            if (this.isLocked) return;
+            this.isDragging = true;
+            this.dragStart = {
+                x: e.touches[0].clientX - this.container.offsetLeft,
+                y: e.touches[0].clientY - this.container.offsetTop
+            };
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!this.isDragging) return;
+            e.preventDefault();
+            this.container.style.left = (e.touches[0].clientX - this.dragStart.x) + 'px';
+            this.container.style.top = (e.touches[0].clientY - this.dragStart.y) + 'px';
+        });
+
+        document.addEventListener('touchend', () => {
+            this.isDragging = false;
         });
     }
 
