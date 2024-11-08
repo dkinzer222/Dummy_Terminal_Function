@@ -68,10 +68,30 @@ class Keyboard {
             };
         });
 
+        const constrainPosition = () => {
+            const rect = this.container.getBoundingClientRect();
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            if (rect.right > windowWidth) {
+                this.container.style.left = (windowWidth - rect.width) + 'px';
+            }
+            if (rect.bottom > windowHeight) {
+                this.container.style.top = (windowHeight - rect.height) + 'px';
+            }
+            if (rect.left < 0) {
+                this.container.style.left = '0px';
+            }
+            if (rect.top < 0) {
+                this.container.style.top = '0px';
+            }
+        };
+
         document.addEventListener('mousemove', (e) => {
             if (!this.isDragging) return;
             this.container.style.left = (e.clientX - this.dragStart.x) + 'px';
             this.container.style.top = (e.clientY - this.dragStart.y) + 'px';
+            constrainPosition();
         });
 
         document.addEventListener('mouseup', () => {
@@ -93,6 +113,7 @@ class Keyboard {
             e.preventDefault();
             this.container.style.left = (e.touches[0].clientX - this.dragStart.x) + 'px';
             this.container.style.top = (e.touches[0].clientY - this.dragStart.y) + 'px';
+            constrainPosition();
         });
 
         document.addEventListener('touchend', () => {
