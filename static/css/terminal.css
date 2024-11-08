@@ -64,7 +64,7 @@
 
 .suggestions-box {
     position: absolute;
-    bottom: 100%;
+    bottom: calc(100% + 8px);
     left: 16px;
     right: 16px;
     background-color: #2C3B52;
@@ -193,6 +193,13 @@
 
 .key.return-key {
     background-color: #444444;
+}
+
+.main-content .terminal {
+    height: 100%;
+    background-color: #1C2333;
+    margin: 0;
+    border-radius: 8px;
 }
 
 @media (max-width: 768px) {
