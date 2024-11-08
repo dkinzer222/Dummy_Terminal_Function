@@ -3,53 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Network Security Toolkit</title>
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>MobileTerminalInterface</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/terminal.css') }}" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
-        <div class="ios-nav">
-            <div class="ios-nav-left">
-                <button class="ios-button">Done</button>
-            </div>
-            <div class="ios-title">
-                <i class='bx bxs-rocket'></i>
-                Network Security Toolkit
-            </div>
-            <div class="ios-nav-right">
-                <button class="ios-button">Aa</button>
-                <button class="ios-button"><i class='bx bx-refresh'></i></button>
+        <div class="status-bar">
+            <div>9:39</div>
+            <div class="network-indicators">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-full"></i>
             </div>
         </div>
 
-        <div class="tools-section">
-            <div class="tools-grid">
-                <!-- Tools will be dynamically populated -->
+        <div class="tab-bar">
+            <div class="tab active">Progress</div>
+            <div class="tab">Output</div>
+        </div>
+
+        <div class="nav-bar">
+            <button class="nav-button"><i class="fas fa-arrow-left"></i></button>
+            <button class="nav-button"><i class="fas fa-arrow-right"></i></button>
+            <button class="nav-button"><i class="fas fa-redo"></i></button>
+            <div class="url-bar">{...}.repl.co /</div>
+            <button class="nav-button"><i class="fas fa-wrench"></i></button>
+            <button class="nav-button"><i class="fas fa-external-link-alt"></i></button>
+        </div>
+
+        <div class="main-content">
+            <!-- Terminal output will be displayed here -->
+        </div>
+
+        <div class="message-input-container">
+            <div class="message-input-wrapper">
+                <button class="input-button"><i class="fas fa-paperclip"></i></button>
+                <input type="text" class="message-input" placeholder="Type message...">
+                <button class="send-button"><i class="fas fa-arrow-up"></i></button>
             </div>
         </div>
 
-        <div class="terminal-section">
-            <div class="terminal">
-                <div class="terminal-output"></div>
-                <div class="terminal-input">
-                    <span class="prompt">$</span>
-                    <input type="text" class="command-input" autocomplete="off">
-                </div>
-            </div>
+        <div class="suggestion-bar">
+            <button class="suggestion">I</button>
+            <button class="suggestion">The</button>
+            <button class="suggestion">I'm</button>
         </div>
 
-        <div class="mobile-keyboard">
-            <div class="keyboard-container">
-                <!-- Keyboard will be dynamically generated -->
-            </div>
+        <div class="keyboard-container">
+            <!-- Keyboard will be dynamically generated -->
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/terminal.js') }}"></script>
     <script src="{{ url_for('static', filename='js/keyboard.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/tools.js') }}"></script>
 </body>
 </html>
