@@ -30,7 +30,6 @@ class Terminal {
     setupInput() {
         if (!this.input) return;
         
-        // Prevent iOS keyboard
         this.input.setAttribute('readonly', 'readonly');
         
         this.input.addEventListener('focus', () => {
@@ -40,68 +39,23 @@ class Terminal {
             }
         });
 
-        // Restore custom keyboard input handling
-        if (window.keyboard) {
-            window.keyboard.onKeyPress = (key) => {
-                switch(key) {
-                    case 'Backspace':
-                        this.input.value = this.input.value.slice(0, -1);
-                        break;
-                    case 'Enter':
-                        const command = this.input.value.trim();
-                        if (command) {
-                            this.write(`$ ${command}`, 'command');
-                            this.executeCommand(command);
-                        }
-                        this.input.value = '';
-                        break;
-                    case 'Space':
-                        this.input.value += ' ';
-                        break;
-                    case 'Tab':
-                    case 'Shift':
-                    case 'Ctrl':
-                    case 'Alt':
-                    case 'Caps':
-                        // Ignore these keys
-                        break;
-                    default:
-                        if (key.startsWith('F')) {
-                            // Handle function keys if needed
-                            break;
-                        }
-                        this.input.value += key;
-                }
-                this.input.focus();
-            };
-        }
-
-        // Update terminal output when input changes
         this.input.addEventListener('input', () => {
-            const progressTab = document.querySelector('#progress-tab .terminal-output');
-            if (progressTab) {
-                progressTab.textContent = this.input.value;
-            }
+            this.input.focus();
         });
     }
 
     executeCommand(command) {
-        const progressTab = document.querySelector('#progress-tab .terminal-output');
-        if (progressTab) {
-            // Add the command to output with prompt
-            const cmdLine = document.createElement('div');
-            cmdLine.className = 'terminal-line command';
-            cmdLine.textContent = `$ ${command}`;
-            progressTab.appendChild(cmdLine);
-            
-            // Add command output
-            const output = document.createElement('div');
-            output.className = 'terminal-line output';
-            output.textContent = `Executing: ${command}`;
-            progressTab.appendChild(output);
-            
-            progressTab.scrollTop = progressTab.scrollHeight;
-        }
+        const cmdLine = document.createElement('div');
+        cmdLine.className = 'terminal-line command';
+        cmdLine.textContent = `$ ${command}`;
+        this.output.appendChild(cmdLine);
+        
+        const output = document.createElement('div');
+        output.className = 'terminal-line output';
+        output.textContent = `Executing: ${command}`;
+        this.output.appendChild(output);
+        
+        this.output.scrollTop = this.output.scrollHeight;
     }
 
     setupTerminalHeader() {
@@ -142,7 +96,6 @@ class Terminal {
     }
 }
 
-// Initialize terminal when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.terminal = new Terminal();
 });

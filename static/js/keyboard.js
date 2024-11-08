@@ -46,6 +46,9 @@ class Keyboard {
 
     setupKeyboard() {
         if (!this.container) return;
+        
+        const size = this.isLocked ? { width: '100%' } : { width: '80%', left: '10%' };
+        Object.assign(this.container.style, size);
 
         this.container.innerHTML = this.keyboardLayout.map((row, rowIndex) => `
             <div class="keyboard-row">
@@ -78,15 +81,9 @@ class Keyboard {
             this.isLocked = !this.isLocked;
             lockBtn.innerHTML = this.isLocked ? '🔒' : '🔓';
             this.container.classList.toggle('draggable', !this.isLocked);
-        });
-
-        this.container.addEventListener('mousedown', (e) => {
-            if (this.isLocked) return;
-            this.isDragging = true;
-            this.dragStart = {
-                x: e.clientX - this.container.offsetLeft,
-                y: e.clientY - this.container.offsetTop
-            };
+            
+            const size = this.isLocked ? { width: '100%', left: '0' } : { width: '80%', left: '10%' };
+            Object.assign(this.container.style, size);
         });
 
         const constrainPosition = () => {
@@ -107,6 +104,16 @@ class Keyboard {
                 this.container.style.top = '0px';
             }
         };
+
+        this.container.addEventListener('mousedown', (e) => {
+            if (this.isLocked) return;
+            if (e.target === lockBtn) return;
+            this.isDragging = true;
+            this.dragStart = {
+                x: e.clientX - this.container.offsetLeft,
+                y: e.clientY - this.container.offsetTop
+            };
+        });
 
         document.addEventListener('mousemove', (e) => {
             if (!this.isDragging) return;
