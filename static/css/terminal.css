@@ -15,23 +15,24 @@
 }
 
 .matrix-bg {
-    display: none; /* Hide by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.3;
+    z-index: 1;
 }
 
 #progress-tab .matrix-bg {
-    display: block; /* Show only in progress tab */
-}
-
-#output-tab {
-    background-color: #000; /* Black background for output */
+    display: block;
 }
 
 .matrix-text {
-    position: absolute;
-    font-family: 'Courier New', monospace;
     font-size: 12px;
+    color: #00ff00;
+    text-shadow: 0 0 5px #00ff00;
     animation: matrix-fall 8s linear infinite, rgb-glow 3s infinite;
-    opacity: 0.8;
 }
 
 @keyframes matrix-fall {
@@ -40,10 +41,10 @@
 }
 
 @keyframes rgb-glow {
-    0% { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+    0% { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
     33% { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
-    66% { color: #0000ff; text-shadow: 0 0 10px #0000ff; }
-    100% { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+    66% { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
+    100% { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
 }
 
 .terminal-output {
@@ -89,7 +90,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 25vh; /* Set to 25% of viewport height */
+    height: 25vh;
     background-color: rgba(31, 31, 31, 0.95);
     transform: translateY(100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
