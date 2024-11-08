@@ -114,11 +114,13 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    background-color: rgba(26, 29, 38, 0.95);
+    background-color: rgba(26, 29, 38, 0.98);
     transform: translateY(-100%);
-    transition: transform 0.3s ease;
-    z-index: 1000;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1500;
     border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .tools-menu.expanded {
@@ -132,6 +134,14 @@ body {
     padding: 1rem;
     max-height: 70vh;
     overflow-y: auto;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.tools-menu.expanded .tools-grid {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .tool-card {

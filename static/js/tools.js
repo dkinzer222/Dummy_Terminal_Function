@@ -3,7 +3,7 @@ class ToolsManager {
         this.initialized = false;
         this.initializeRetries = 0;
         this.maxRetries = 5;
-        this.retryDelay = 1000; // Base delay in ms
+        this.retryDelay = 1000;
         this.tools = [
             {
                 id: 'port-scanner',
@@ -49,39 +49,52 @@ class ToolsManager {
             }
         ];
 
+        // Start initialization when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.initWithRetry());
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => this.initWithRetry(), 100);
+            });
         } else {
-            this.initWithRetry();
+            setTimeout(() => this.initWithRetry(), 100);
         }
     }
 
     async initWithRetry() {
+        if (this.initialized) return;
+
         try {
             await this.init();
             this.initialized = true;
             console.log('ToolsManager initialized successfully');
         } catch (error) {
             console.warn(`Failed to initialize ToolsManager (attempt ${this.initializeRetries + 1}):`, error);
+            
             if (this.initializeRetries < this.maxRetries) {
                 this.initializeRetries++;
-                const delay = this.retryDelay * Math.pow(2, this.initializeRetries - 1); // Exponential backoff
+                const delay = this.retryDelay * Math.pow(2, this.initializeRetries - 1);
                 setTimeout(() => this.initWithRetry(), delay);
             } else {
                 console.error('Failed to initialize ToolsManager after maximum retries');
+                this.handleInitializationFailure();
             }
         }
+    }
+
+    handleInitializationFailure() {
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = 'Failed to initialize tools. Please refresh the page.';
+        document.body.appendChild(errorMessage);
     }
 
     async init() {
         try {
             await this.setupElements();
-            if (this.toolsGrid && this.toolsToggle) {
-                this.addEventListeners();
-                this.renderTools();
-            } else {
+            if (!this.toolsGrid || !this.toolsToggle) {
                 throw new Error('Required elements not found');
             }
+            await this.addEventListeners();
+            await this.renderTools();
         } catch (error) {
             throw new Error(`Initialization failed: ${error.message}`);
         }
@@ -122,52 +135,71 @@ class ToolsManager {
         });
     }
 
-    renderTools() {
-        if (!this.toolsGrid || !Array.isArray(this.tools)) {
-            console.error('Tools grid or tools array not available');
-            return;
-        }
+    async renderTools() {
+        return new Promise((resolve, reject) => {
+            if (!this.toolsGrid || !Array.isArray(this.tools)) {
+                reject(new Error('Tools grid or tools array not available'));
+                return;
+            }
 
-        try {
-            const toolsHtml = this.tools.map(tool => `
-                <div class="tool-card" data-action="${tool.action}" id="${tool.id}">
-                    <div class="tool-icon"><i class='${tool.icon}'></i></div>
-                    <div class="tool-name">${tool.name}</div>
-                    <div class="tool-description">${tool.description}</div>
-                    <button class="use-tool-btn">Use Tool</button>
-                </div>
-            `).join('');
+            try {
+                requestAnimationFrame(() => {
+                    const toolsHtml = this.tools.map(tool => `
+                        <div class="tool-card" data-action="${tool.action}" id="${tool.id}">
+                            <div class="tool-icon"><i class='${tool.icon}'></i></div>
+                            <div class="tool-name">${tool.name}</div>
+                            <div class="tool-description">${tool.description}</div>
+                            <button class="use-tool-btn">Use Tool</button>
+                        </div>
+                    `).join('');
 
-            this.toolsGrid.innerHTML = toolsHtml;
-        } catch (error) {
-            console.error('Error rendering tools:', error);
-            throw error;
-        }
-    }
-
-    addEventListeners() {
-        if (!this.toolsGrid || !this.toolsToggle) return;
-
-        // Tool card click handler
-        this.toolsGrid.addEventListener('click', (e) => {
-            const toolCard = e.target.closest('.tool-card');
-            if (!toolCard) return;
-
-            const action = toolCard.dataset.action;
-            if (action) {
-                this.executeTool(action);
-                this.toolsMenu.classList.remove('expanded');
+                    this.toolsGrid.innerHTML = toolsHtml;
+                    resolve();
+                });
+            } catch (error) {
+                reject(error);
             }
         });
+    }
 
-        // Tools toggle handler
-        this.toolsToggle.addEventListener('click', () => {
-            this.toolsMenu.classList.toggle('expanded');
-            const icon = this.toolsToggle.querySelector('i');
-            if (icon) {
-                icon.classList.toggle('bx-chevron-up');
-                icon.classList.toggle('bx-chevron-down');
+    async addEventListeners() {
+        return new Promise((resolve) => {
+            if (!this.toolsGrid || !this.toolsToggle) {
+                resolve();
+                return;
             }
+
+            // Tool card click handler with error boundary
+            this.toolsGrid.addEventListener('click', (e) => {
+                try {
+                    const toolCard = e.target.closest('.tool-card');
+                    if (!toolCard) return;
+
+                    const action = toolCard.dataset.action;
+                    if (action) {
+                        this.executeTool(action);
+                        this.toolsMenu.classList.remove('expanded');
+                    }
+                } catch (error) {
+                    console.error('Error handling tool click:', error);
+                }
+            });
+
+            // Tools toggle handler with error boundary
+            this.toolsToggle.addEventListener('click', () => {
+                try {
+                    this.toolsMenu.classList.toggle('expanded');
+                    const icon = this.toolsToggle.querySelector('i');
+                    if (icon) {
+                        icon.classList.toggle('bx-chevron-up');
+                        icon.classList.toggle('bx-chevron-down');
+                    }
+                } catch (error) {
+                    console.error('Error toggling tools menu:', error);
+                }
+            });
+
+            resolve();
         });
     }
 
