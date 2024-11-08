@@ -1,11 +1,10 @@
 class VirtualKeyboard {
     constructor() {
-        this.container = null;
-        this.input = null;
-        this.terminal = null;
-        this.isCollapsed = true;
-        this.showSpecialKeys = false;
+        // Initialize state
         this.isVisible = false;
+        this.showSpecialKeys = false;
+        this.isShift = false;
+        this.isCaps = false;
         
         // Main keyboard layout
         this.mainLayout = [
@@ -23,9 +22,6 @@ class VirtualKeyboard {
             ['↑', '←', '↓', '→']
         ];
 
-        this.isShift = false;
-        this.isCaps = false;
-        
         // Initialize when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.init());
@@ -36,22 +32,21 @@ class VirtualKeyboard {
 
     init() {
         this.setupElements();
-        this.createKeyboardContainer();
-        this.createKeyboardToggle();
-        this.render();
-        this.addEventListeners();
+        if (this.container && this.input) {
+            this.createKeyboardContainer();
+            this.createKeyboardToggle();
+            this.render();
+            this.addEventListeners();
+        } else {
+            console.warn('Keyboard elements not found, retrying initialization...');
+            setTimeout(() => this.init(), 500);
+        }
     }
 
     setupElements() {
         this.container = document.querySelector('.keyboard-container');
         this.input = document.querySelector('.command-input');
         this.terminal = document.querySelector('.terminal');
-        
-        if (!this.container || !this.input || !this.terminal) {
-            console.warn('Some keyboard elements not found, retrying...');
-            setTimeout(() => this.setupElements(), 500);
-            return;
-        }
     }
 
     createKeyboardContainer() {
@@ -89,10 +84,30 @@ class VirtualKeyboard {
             document.body.appendChild(toggle);
         }
         
-        // Remove any existing listeners
+        // Remove any existing listeners and create new toggle
         const newToggle = toggle.cloneNode(true);
         toggle.parentNode.replaceChild(newToggle, toggle);
         newToggle.addEventListener('click', () => this.toggleKeyboard());
+    }
+
+    toggleKeyboard() {
+        if (!this.container) return;
+
+        this.isVisible = !this.isVisible;
+        this.container.classList.toggle('visible', this.isVisible);
+        
+        const toggle = document.querySelector('.keyboard-toggle');
+        if (toggle) {
+            const icon = toggle.querySelector('i');
+            icon.classList.toggle('bx-chevron-up', !this.isVisible);
+            icon.classList.toggle('bx-chevron-down', this.isVisible);
+        }
+
+        // Focus input when showing keyboard
+        if (this.isVisible && this.input) {
+            this.input.focus();
+            this.input.click(); // Ensure mobile keyboard doesn't appear
+        }
     }
 
     toggleTerminal() {
@@ -112,25 +127,6 @@ class VirtualKeyboard {
         const icon = btn.querySelector('i');
         icon.classList.toggle('bx-chevron-down');
         icon.classList.toggle('bx-chevron-up');
-    }
-
-    toggleKeyboard() {
-        if (!this.container) return;
-
-        this.isVisible = !this.isVisible;
-        this.container.classList.toggle('visible', this.isVisible);
-        
-        const toggle = document.querySelector('.keyboard-toggle');
-        if (toggle) {
-            const icon = toggle.querySelector('i');
-            icon.classList.toggle('bx-chevron-up', !this.isVisible);
-            icon.classList.toggle('bx-chevron-down', this.isVisible);
-        }
-
-        // Focus input when showing keyboard
-        if (this.isVisible && this.input) {
-            this.input.focus();
-        }
     }
 
     render() {
@@ -208,22 +204,7 @@ class VirtualKeyboard {
             }
         });
 
-        // Touch events for visual feedback
-        this.container.addEventListener('touchstart', (e) => {
-            const key = e.target.closest('.key');
-            if (key) {
-                key.classList.add('pressed');
-            }
-        }, { passive: true });
-
-        this.container.addEventListener('touchend', (e) => {
-            const key = e.target.closest('.key');
-            if (key) {
-                key.classList.remove('pressed');
-            }
-        }, { passive: true });
-
-        // Input focus event
+        // Input focus events
         this.input.addEventListener('focus', () => {
             if (!this.isVisible) {
                 this.toggleKeyboard();
@@ -292,8 +273,6 @@ class VirtualKeyboard {
                 this.input.focus();
             }
         }, 0);
-
-        return false;
     }
 
     updateModifierState() {

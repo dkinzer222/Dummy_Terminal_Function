@@ -1,7 +1,6 @@
 class Terminal {
     constructor() {
         this.init();
-        this.usingPhysicalKeyboard = false;
     }
 
     init() {
@@ -14,9 +13,14 @@ class Terminal {
 
     setup() {
         this.setupElements();
-        this.setupTerminalHeader();
-        this.welcomeMessage();
-        this.addEventListeners();
+        if (this.terminal && this.output && this.input) {
+            this.setupTerminalHeader();
+            this.welcomeMessage();
+            this.addEventListeners();
+        } else {
+            console.warn('Terminal elements not found, retrying setup...');
+            setTimeout(() => this.setup(), 500);
+        }
     }
 
     setupElements() {
@@ -36,16 +40,6 @@ class Terminal {
             'ssl': (args) => this.sslCheck(args),
             'system': (args) => this.executeSystemCommand(args)
         };
-
-        if (this.input) {
-            this.input.setAttribute('readonly', true);
-            this.input.addEventListener('focus', () => {
-                const keyboard = document.querySelector('.keyboard-container');
-                if (keyboard) {
-                    keyboard.classList.add('visible');
-                }
-            });
-        }
     }
 
     setupTerminalHeader() {
@@ -70,20 +64,6 @@ class Terminal {
         header.querySelector('.maximize-btn').addEventListener('click', () => this.toggleMaximize());
     }
 
-    toggleMinimize() {
-        this.terminal.classList.toggle('minimized');
-        const minimizeBtn = this.terminal.querySelector('.minimize-btn i');
-        minimizeBtn.classList.toggle('bx-minus');
-        minimizeBtn.classList.toggle('bx-plus');
-    }
-
-    toggleMaximize() {
-        this.terminal.classList.toggle('maximized');
-        const maximizeBtn = this.terminal.querySelector('.maximize-btn i');
-        maximizeBtn.classList.toggle('bx-expand');
-        maximizeBtn.classList.toggle('bx-collapse');
-    }
-
     welcomeMessage() {
         this.write('Network Security Toolkit v1.0');
         this.write('Type "help" for available commands');
@@ -101,12 +81,8 @@ class Terminal {
     addEventListeners() {
         if (!this.input) return;
 
+        // Physical keyboard input handling
         this.input.addEventListener('keydown', (e) => {
-            if (!e.isTrusted) return;
-
-            this.usingPhysicalKeyboard = true;
-            this.input.removeAttribute('readonly');
-
             if (e.key === 'Enter') {
                 const command = this.input.value.trim();
                 if (command) {
@@ -115,6 +91,7 @@ class Terminal {
                     this.historyIndex = this.history.length;
                 }
                 this.input.value = '';
+                e.preventDefault();
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 if (this.historyIndex > 0) {
@@ -131,26 +108,36 @@ class Terminal {
                     this.input.value = '';
                 }
             }
-
-            setTimeout(() => {
-                this.usingPhysicalKeyboard = false;
-                this.input.setAttribute('readonly', true);
-            }, 100);
         });
 
-        this.input.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            this.input.blur();
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.keyboard-container') && !e.target.closest('.command-input')) {
-                const keyboard = document.querySelector('.keyboard-container');
-                if (keyboard) {
-                    keyboard.classList.remove('visible');
-                }
+        // Input focus handling
+        this.input.addEventListener('focus', () => {
+            const keyboard = document.querySelector('.keyboard-container');
+            if (keyboard && !keyboard.classList.contains('visible')) {
+                window.keyboard?.toggleKeyboard();
             }
         });
+
+        // Click handling for keyboard visibility
+        this.terminal.addEventListener('click', (e) => {
+            if (e.target.closest('.terminal-input')) {
+                this.input.focus();
+            }
+        });
+    }
+
+    toggleMinimize() {
+        this.terminal.classList.toggle('minimized');
+        const minimizeBtn = this.terminal.querySelector('.minimize-btn i');
+        minimizeBtn.classList.toggle('bx-minus');
+        minimizeBtn.classList.toggle('bx-plus');
+    }
+
+    toggleMaximize() {
+        this.terminal.classList.toggle('maximized');
+        const maximizeBtn = this.terminal.querySelector('.maximize-btn i');
+        maximizeBtn.classList.toggle('bx-expand');
+        maximizeBtn.classList.toggle('bx-collapse');
     }
 
     executeCommand(command) {
@@ -207,7 +194,7 @@ class Terminal {
         
         this.write(`Scanning ${args[0]}...`);
         try {
-            const response = await fetch(`/api/scan`, {
+            const response = await fetch('/api/scan', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -229,7 +216,7 @@ class Terminal {
         
         this.write(`Looking up ${args[0]}...`);
         try {
-            const response = await fetch(`/api/lookup`, {
+            const response = await fetch('/api/lookup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -282,7 +269,6 @@ class Terminal {
         }
     }
 
-    // Placeholder methods for potentially missing commands
     dnsLookup() {
         this.write('DNS lookup functionality not implemented');
     }
@@ -296,7 +282,7 @@ class Terminal {
     }
 }
 
-// Initialize terminal
+// Initialize terminal when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         window.terminal = new Terminal();

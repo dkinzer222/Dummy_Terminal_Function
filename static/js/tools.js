@@ -1,6 +1,8 @@
 class ToolsManager {
     constructor() {
         this.initialized = false;
+        this.initializeRetries = 0;
+        this.maxRetries = 5;
         this.tools = [
             {
                 id: 'port-scanner',
@@ -45,31 +47,46 @@ class ToolsManager {
                 action: 'system'
             }
         ];
-        
-        // Initialize when DOM is ready
-        document.addEventListener('DOMContentLoaded', () => {
-            this.init();
-        });
+
+        // Wait for DOM to be ready before initialization
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.initWithRetry());
+        } else {
+            this.initWithRetry();
+        }
     }
 
-    async init() {
+    async initWithRetry() {
         try {
-            await this.setupElements();
-            this.addEventListeners();
+            await this.init();
             this.initialized = true;
         } catch (error) {
-            console.error('Failed to initialize ToolsManager:', error);
-            // Retry initialization after a delay
-            if (!this.initialized) {
-                setTimeout(() => this.init(), 1000);
+            console.warn(`Failed to initialize ToolsManager (attempt ${this.initializeRetries + 1}):`, error);
+            if (this.initializeRetries < this.maxRetries) {
+                this.initializeRetries++;
+                setTimeout(() => this.initWithRetry(), 1000 * this.initializeRetries);
+            } else {
+                console.error('Failed to initialize ToolsManager after maximum retries');
             }
         }
     }
 
+    async init() {
+        await this.setupElements();
+        this.addEventListeners();
+    }
+
     async setupElements() {
         return new Promise((resolve, reject) => {
+            // Find or create tools menu
             this.toolsMenu = document.querySelector('.tools-menu');
             if (!this.toolsMenu) {
+                const container = document.querySelector('.app-container');
+                if (!container) {
+                    reject(new Error('App container not found'));
+                    return;
+                }
+
                 this.toolsMenu = document.createElement('div');
                 this.toolsMenu.className = 'tools-menu';
                 this.toolsMenu.innerHTML = `
@@ -78,14 +95,10 @@ class ToolsManager {
                     </button>
                     <div class="tools-grid"></div>
                 `;
-                const container = document.querySelector('.app-container');
-                if (!container) {
-                    reject(new Error('App container not found'));
-                    return;
-                }
                 container.insertBefore(this.toolsMenu, container.firstChild);
             }
 
+            // Get required elements
             this.toolsGrid = this.toolsMenu.querySelector('.tools-grid');
             this.toolsToggle = this.toolsMenu.querySelector('.tools-toggle');
 
@@ -94,8 +107,13 @@ class ToolsManager {
                 return;
             }
 
-            this.renderTools();
-            resolve();
+            // Render tools only after elements are confirmed to exist
+            try {
+                this.renderTools();
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
@@ -104,21 +122,27 @@ class ToolsManager {
             throw new Error('Tools grid or tools array not available');
         }
 
-        const toolsHtml = this.tools.map(tool => `
-            <div class="tool-card" data-action="${tool.action}" id="${tool.id}">
-                <div class="tool-icon"><i class='${tool.icon}'></i></div>
-                <div class="tool-name">${tool.name}</div>
-                <div class="tool-description">${tool.description}</div>
-                <button class="use-tool-btn">Use Tool</button>
-            </div>
-        `).join('');
+        try {
+            const toolsHtml = this.tools.map(tool => `
+                <div class="tool-card" data-action="${tool.action}" id="${tool.id}">
+                    <div class="tool-icon"><i class='${tool.icon}'></i></div>
+                    <div class="tool-name">${tool.name}</div>
+                    <div class="tool-description">${tool.description}</div>
+                    <button class="use-tool-btn">Use Tool</button>
+                </div>
+            `).join('');
 
-        this.toolsGrid.innerHTML = toolsHtml;
+            this.toolsGrid.innerHTML = toolsHtml;
+        } catch (error) {
+            console.error('Error rendering tools:', error);
+            throw error;
+        }
     }
 
     addEventListeners() {
         if (!this.toolsGrid || !this.toolsToggle) return;
 
+        // Tool card click handler
         this.toolsGrid.addEventListener('click', (e) => {
             const toolCard = e.target.closest('.tool-card');
             if (!toolCard) return;
@@ -130,6 +154,7 @@ class ToolsManager {
             }
         });
 
+        // Tools toggle handler
         this.toolsToggle.addEventListener('click', () => {
             this.toolsMenu.classList.toggle('expanded');
             const icon = this.toolsToggle.querySelector('i');
