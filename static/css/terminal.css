@@ -15,6 +15,16 @@
     overflow: hidden;
 }
 
+.terminal.maximized {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100vh;
+    z-index: 1000;
+}
+
 .terminal-header {
     display: flex;
     justify-content: space-between;
@@ -45,6 +55,8 @@
 .terminal-line {
     animation: rgb-glow 3s infinite;
     margin: 2px 0;
+    white-space: pre-wrap;
+    word-break: break-all;
 }
 
 .terminal-input {
@@ -76,12 +88,8 @@
     left: 0;
     right: 0;
     background-color: #1f1f1f;
-    padding: 5px;
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 4px;
+    padding: 8px;
     border-top: 1px solid var(--border-color);
-    height: 180px;
 }
 
 .keyboard-row {
@@ -91,7 +99,7 @@
 }
 
 .key {
-    flex: 1;
+    min-width: 40px;
     height: 40px;
     background-color: #2d2d2d;
     border: none;
@@ -100,22 +108,45 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
     user-select: none;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
+    padding: 0 8px;
 }
 
-.key:active {
+.key:active, .key.pressed, .key.active {
     background-color: #3d3d3d;
+    transform: translateY(2px);
 }
 
-.key[data-key="space"] {
-    grid-column: span 6;
+/* Special key styles */
+.function-key {
+    background-color: #252525;
+    font-size: 12px;
 }
 
-.key[data-key="return"] {
-    grid-column: span 2;
+.modifier-key {
+    background-color: #353535;
+    min-width: 60px;
+}
+
+.control-key {
+    background-color: #353535;
+    min-width: 70px;
+}
+
+.space-key {
+    min-width: 200px;
+}
+
+.navigation-key {
+    background-color: #252525;
+    font-size: 12px;
+}
+
+.arrow-key {
+    background-color: #353535;
 }
 
 @keyframes rgb-glow {
@@ -151,17 +182,47 @@
     overflow-y: auto;
 }
 
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
     .terminal {
         height: calc(100vh - 240px);
     }
     
     .keyboard-container {
-        height: 200px;
+        padding: 4px;
     }
     
     .key {
+        min-width: 32px;
         height: 45px;
-        font-size: 14px;
+        font-size: 12px;
+        padding: 0 4px;
+    }
+    
+    .modifier-key {
+        min-width: 50px;
+    }
+    
+    .control-key {
+        min-width: 60px;
+    }
+    
+    .space-key {
+        min-width: 120px;
+    }
+    
+    .function-key, .navigation-key {
+        display: none;
+    }
+}
+
+/* Dark theme enhancements */
+@media (prefers-color-scheme: dark) {
+    .key {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .key:active, .key.pressed {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     }
 }

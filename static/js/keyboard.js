@@ -3,13 +3,22 @@ class VirtualKeyboard {
         this.container = document.querySelector('.keyboard-container');
         this.input = document.querySelector('.command-input');
         this.layout = [
-            ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
-            ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-            ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-            ['⇧', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '⌫'],
-            ['123', '🌐', 'space', 'return']
+            ['Esc', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'],
+            ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+            ['Tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
+            ['Caps', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'Enter'],
+            ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'Shift'],
+            ['Ctrl', 'Win', 'Alt', 'Space', 'Alt', 'Menu', 'Ctrl'],
+            ['Insert', 'Home', 'PgUp', 'Delete', 'End', 'PgDn'],
+            ['↑', '←', '↓', '→'],
+            ['Num', '/', '*', '-'],
+            ['7', '8', '9', '+'],
+            ['4', '5', '6'],
+            ['1', '2', '3', 'Enter'],
+            ['0', '.']
         ];
         this.isShift = false;
+        this.isNumLock = true;
         this.init();
     }
 
@@ -31,10 +40,19 @@ class VirtualKeyboard {
                 keyDiv.textContent = key;
                 keyDiv.dataset.key = key;
                 
-                if (key === 'space') {
-                    keyDiv.style.gridColumn = 'span 6';
-                } else if (key === 'return') {
-                    keyDiv.style.gridColumn = 'span 2';
+                // Add specific classes for special keys
+                if (['Esc', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'].includes(key)) {
+                    keyDiv.classList.add('function-key');
+                } else if (['Shift', 'Ctrl', 'Alt', 'Win', 'Menu'].includes(key)) {
+                    keyDiv.classList.add('modifier-key');
+                } else if (['Enter', 'Backspace', 'Tab', 'Caps'].includes(key)) {
+                    keyDiv.classList.add('control-key');
+                } else if (key === 'Space') {
+                    keyDiv.classList.add('space-key');
+                } else if (['Insert', 'Home', 'PgUp', 'Delete', 'End', 'PgDn'].includes(key)) {
+                    keyDiv.classList.add('navigation-key');
+                } else if (['↑', '←', '↓', '→'].includes(key)) {
+                    keyDiv.classList.add('arrow-key');
                 }
                 
                 rowDiv.appendChild(keyDiv);
@@ -52,35 +70,40 @@ class VirtualKeyboard {
             const value = key.dataset.key;
             
             switch(value) {
-                case '⇧':
+                case 'Shift':
                     this.isShift = !this.isShift;
                     this.updateShiftState();
                     break;
-                case '⌫':
+                case 'Caps':
+                    key.classList.toggle('active');
+                    this.isShift = !this.isShift;
+                    this.updateShiftState();
+                    break;
+                case 'Backspace':
                     this.input.value = this.input.value.slice(0, -1);
                     break;
-                case 'space':
+                case 'Space':
                     this.input.value += ' ';
                     break;
-                case 'return':
+                case 'Enter':
                     if (this.input.value.trim()) {
                         this.input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
                     }
                     break;
-                case '123':
-                    // Toggle number row visibility
+                case 'Tab':
+                    this.input.value += '\t';
                     break;
-                case '🌐':
-                    // Toggle keyboard visibility
-                    this.container.classList.toggle('hidden');
+                case 'Num':
+                    this.isNumLock = !this.isNumLock;
+                    key.classList.toggle('active');
                     break;
                 default:
-                    if (this.isShift) {
-                        this.input.value += value.toUpperCase();
-                        this.isShift = false;
-                        this.updateShiftState();
-                    } else {
-                        this.input.value += value.toLowerCase();
+                    if (value.length === 1) {
+                        this.input.value += this.isShift ? value.toUpperCase() : value.toLowerCase();
+                        if (this.isShift && !document.querySelector('.key[data-key="Caps"].active')) {
+                            this.isShift = false;
+                            this.updateShiftState();
+                        }
                     }
             }
             
@@ -96,11 +119,11 @@ class VirtualKeyboard {
         const keys = this.container.querySelectorAll('.key');
         keys.forEach(key => {
             key.addEventListener('touchstart', () => {
-                key.style.backgroundColor = '#3d3d3d';
+                key.classList.add('pressed');
             });
             
             key.addEventListener('touchend', () => {
-                key.style.backgroundColor = '';
+                key.classList.remove('pressed');
             });
         });
     }
@@ -113,18 +136,10 @@ class VirtualKeyboard {
                 key.textContent = this.isShift ? value.toUpperCase() : value.toLowerCase();
             }
         });
-    }
-
-    show() {
-        this.container.classList.remove('hidden');
-    }
-
-    hide() {
-        this.container.classList.add('hidden');
-    }
-
-    toggle() {
-        this.container.classList.toggle('hidden');
+        
+        document.querySelectorAll('.key[data-key="Shift"]').forEach(key => {
+            key.classList.toggle('active', this.isShift);
+        });
     }
 }
 
