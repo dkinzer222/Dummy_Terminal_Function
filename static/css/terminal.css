@@ -118,9 +118,10 @@
 
 .keyboard-container {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: 5vh;
+    left: 5vw;
+    right: 5vw;
+    width: 90vw;
     background-color: rgba(31, 31, 31, 0.95);
     padding: 8px;
     height: 30vh;
@@ -137,9 +138,32 @@
     width: 80vw;
     left: 10vw;
     height: 30vh;
-    resize: none;
+    resize: both;
     overflow: hidden;
     border: 1px solid rgba(0, 123, 255, 0.2);
+}
+
+.resize-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: rgba(0, 123, 255, 0.3);
+    border-radius: 50%;
+    z-index: 1001;
+}
+
+.resize-handle.top {
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: ns-resize;
+}
+
+.resize-handle.right {
+    top: 50%;
+    right: -5px;
+    transform: translateY(-50%);
+    cursor: ew-resize;
 }
 
 .keyboard-row {

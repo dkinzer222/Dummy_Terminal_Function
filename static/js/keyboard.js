@@ -54,15 +54,9 @@ class Keyboard {
     setupKeyboard() {
         if (!this.container) return;
         
-        const size = this.isLocked ? { width: '100%' } : { width: '80%', left: '10%' };
+        const size = this.isLocked ? { width: '90vw', left: '5vw' } : { width: '80vw', left: '10vw' };
         Object.assign(this.container.style, size);
         
-        // Ensure input field stays connected to keyboard
-        const input = document.querySelector('.command-container');
-        if (input) {
-            input.style.bottom = '100%';
-        }
-
         this.container.innerHTML = this.keyboardLayout.map((row, rowIndex) => `
             <div class="keyboard-row">
                 ${row.map(key => {
@@ -127,21 +121,77 @@ class Keyboard {
         lockBtn.style.top = '10px';
         this.container.appendChild(lockBtn);
 
+        // Add resize handles
+        const topHandle = document.createElement('div');
+        topHandle.className = 'resize-handle top';
+        
+        const rightHandle = document.createElement('div');
+        rightHandle.className = 'resize-handle right';
+        
+        this.container.appendChild(topHandle);
+        this.container.appendChild(rightHandle);
+
+        let startY, startHeight, startX, startWidth;
+
+        topHandle.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            startY = e.clientY;
+            startHeight = parseInt(getComputedStyle(this.container).height);
+            document.addEventListener('mousemove', resizeHeight);
+            document.addEventListener('mouseup', stopResize);
+        });
+
+        rightHandle.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            startX = e.clientX;
+            startWidth = parseInt(getComputedStyle(this.container).width);
+            document.addEventListener('mousemove', resizeWidth);
+            document.addEventListener('mouseup', stopResize);
+        });
+
+        const resizeHeight = (e) => {
+            if (!this.isLocked) {
+                const newHeight = startHeight - (e.clientY - startY);
+                if (newHeight > 100 && newHeight < window.innerHeight * 0.8) {
+                    this.container.style.height = newHeight + 'px';
+                }
+            }
+        };
+
+        const resizeWidth = (e) => {
+            if (!this.isLocked) {
+                const newWidth = startWidth + (e.clientX - startX);
+                if (newWidth > 200 && newWidth < window.innerWidth * 0.9) {
+                    this.container.style.width = newWidth + 'px';
+                }
+            }
+        };
+
+        const stopResize = () => {
+            document.removeEventListener('mousemove', resizeHeight);
+            document.removeEventListener('mousemove', resizeWidth);
+            document.removeEventListener('mouseup', stopResize);
+        };
+
         lockBtn.addEventListener('click', () => {
             this.isLocked = !this.isLocked;
             lockBtn.innerHTML = this.isLocked ? '🔒' : '🔓';
             this.container.classList.toggle('draggable', !this.isLocked);
             
             if (this.isLocked) {
-                this.container.style.width = '100%';
-                this.container.style.left = '0';
-                this.container.style.bottom = '0';
+                this.container.style.width = '90vw';
+                this.container.style.left = '5vw';
+                this.container.style.bottom = '5vh';
                 this.container.style.top = 'auto';
                 this.container.style.height = '30vh';
+                topHandle.style.display = 'none';
+                rightHandle.style.display = 'none';
             } else {
                 this.container.style.width = '80vw';
                 this.container.style.left = '10vw';
                 this.container.style.height = '30vh';
+                topHandle.style.display = 'block';
+                rightHandle.style.display = 'block';
             }
         });
     }
