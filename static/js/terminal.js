@@ -36,6 +36,15 @@ class Terminal {
         this.input.addEventListener('focus', () => {
             if (window.keyboard) {
                 window.keyboard.toggleKeyboard(true);
+                this.input.classList.add('visible');
+            }
+        });
+
+        // Update terminal output when input changes
+        this.input.addEventListener('input', () => {
+            const progressTab = document.querySelector('#progress-tab .terminal-output');
+            if (progressTab) {
+                progressTab.textContent = this.input.value;
             }
         });
 

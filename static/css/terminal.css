@@ -59,14 +59,25 @@
 }
 
 .terminal-input {
+    position: fixed;
+    bottom: 30vh; /* Position above keyboard */
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    background-color: rgba(26, 29, 38, 0.95);
+    padding: 10px;
     display: flex;
     align-items: center;
-    padding: 8px 10px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-    margin-top: 10px;
-    position: relative;
-    z-index: 3;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.terminal-input.visible {
+    transform: translateY(0);
+}
+
+.terminal-title {
+    font-size: 14px; /* Reduced from default size */
 }
 
 .prompt {

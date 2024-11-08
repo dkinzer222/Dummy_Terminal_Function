@@ -139,11 +139,10 @@ class Keyboard {
         
         if (this.container) {
             this.container.classList.toggle('visible', this.isVisible);
-            if (this.isVisible) {
-                const input = document.querySelector('.command-input');
-                if (input) {
-                    input.focus();
-                }
+            const input = document.querySelector('.terminal-input');
+            if (input) {
+                input.classList.toggle('visible', this.isVisible);
+                input.focus();
             }
         }
     }
