@@ -16,6 +16,7 @@ class Terminal {
         if (this.terminal && this.output && this.input) {
             this.setupInput();
             this.addEventListeners();
+            this.setupMatrixBackground();
         }
     }
 
@@ -41,6 +42,33 @@ class Terminal {
                 window.keyboard.toggleKeyboard(true);
             }
         });
+    }
+
+    setupMatrixBackground() {
+        const matrixBg = document.createElement('div');
+        matrixBg.className = 'matrix-bg';
+        this.output.appendChild(matrixBg);
+
+        const chars = '01';
+        const columns = Math.floor(this.output.clientWidth / 15);
+        
+        for (let i = 0; i < columns; i++) {
+            const text = document.createElement('div');
+            text.className = 'matrix-text';
+            text.style.left = (i * 15) + 'px';
+            text.style.top = Math.random() * 100 + '%';
+            text.textContent = chars[Math.floor(Math.random() * chars.length)];
+            matrixBg.appendChild(text);
+        }
+
+        setInterval(() => {
+            const texts = matrixBg.getElementsByClassName('matrix-text');
+            for (let text of texts) {
+                if (Math.random() > 0.98) {
+                    text.textContent = chars[Math.floor(Math.random() * chars.length)];
+                }
+            }
+        }, 100);
     }
 
     executeCommand(command) {

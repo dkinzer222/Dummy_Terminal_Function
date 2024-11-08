@@ -17,9 +17,55 @@
 .terminal-output {
     flex: 1 1 auto;
     overflow-y: auto;
-    padding: 10px;
+    padding: 0;
     position: relative;
     z-index: 2;
+    background-color: rgba(26, 29, 38, 0.95);
+}
+
+@keyframes matrix-fall {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+
+@keyframes rgb-glow {
+    0% { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
+    33% { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
+    66% { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
+    100% { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
+}
+
+.terminal-line {
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin: 0;
+    padding: 2px 8px;
+    position: relative;
+    z-index: 3;
+}
+
+.terminal-line.output {
+    color: #00ff00;
+    text-shadow: 0 0 5px #00ff00;
+    animation: rgb-glow 3s infinite;
+}
+
+.matrix-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    opacity: 0.15;
+}
+
+.matrix-text {
+    position: absolute;
+    color: #00ff00;
+    text-shadow: 0 0 5px #00ff00;
+    font-size: 12px;
+    animation: matrix-fall 4s linear infinite;
 }
 
 .command-container {
@@ -94,20 +140,6 @@
 
 .modifier-key {
     min-width: 50px;
-}
-
-.terminal-line {
-    white-space: pre-wrap;
-    word-break: break-all;
-    margin-bottom: 4px;
-}
-
-.terminal-line.output {
-    color: #FFFFFF;
-}
-
-.terminal-line.error {
-    color: #FF4B4B;
 }
 
 @media (max-width: 768px) {
