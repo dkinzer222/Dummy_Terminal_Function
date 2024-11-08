@@ -5,22 +5,43 @@ class Keyboard {
         this.isLocked = true;
         this.isDragging = false;
         this.keyboardLayout = [
-            // Function key row
             ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'],
-            // Number row
             ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
-            // QWERTY row
             ['Tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
-            // Home row
             ['Caps', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'Enter'],
-            // Shift row
             ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'Shift'],
-            // Bottom row
             ['Ctrl', 'Alt', 'Space', 'Alt', 'Ctrl']
         ];
         this.setupKeyboard();
         this.setupToggleButton();
         this.setupDraggable();
+    }
+
+    onKeyPress(key) {
+        const input = document.querySelector('.command-input');
+        if (!input) return;
+
+        switch(key) {
+            case 'Enter':
+                const command = input.value.trim();
+                if (command && window.terminal) {
+                    window.terminal.executeCommand(command);
+                    input.value = '';
+                }
+                break;
+            case 'Backspace':
+                input.value = input.value.slice(0, -1);
+                break;
+            default:
+                if (key.length === 1 || key === 'Space') {
+                    input.value += (key === 'Space' ? ' ' : key);
+                }
+        }
+        
+        const progressTab = document.querySelector('#progress-tab .terminal-output');
+        if (progressTab) {
+            progressTab.textContent = input.value;
+        }
     }
 
     setupKeyboard() {
@@ -98,7 +119,6 @@ class Keyboard {
             this.isDragging = false;
         });
 
-        // Add touch support
         this.container.addEventListener('touchstart', (e) => {
             if (this.isLocked) return;
             this.isDragging = true;
@@ -169,7 +189,6 @@ class Keyboard {
     }
 }
 
-// Initialize keyboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.keyboard = new Keyboard();
 });

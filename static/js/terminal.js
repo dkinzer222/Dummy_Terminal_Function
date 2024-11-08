@@ -40,15 +40,7 @@ class Terminal {
             }
         });
 
-        // Update terminal output when input changes
-        this.input.addEventListener('input', () => {
-            const progressTab = document.querySelector('#progress-tab .terminal-output');
-            if (progressTab) {
-                progressTab.textContent = this.input.value;
-            }
-        });
-
-        // Handle keyboard input through custom keyboard only
+        // Restore custom keyboard input handling
         if (window.keyboard) {
             window.keyboard.onKeyPress = (key) => {
                 switch(key) {
@@ -83,6 +75,33 @@ class Terminal {
                 this.input.focus();
             };
         }
+
+        // Update terminal output when input changes
+        this.input.addEventListener('input', () => {
+            const progressTab = document.querySelector('#progress-tab .terminal-output');
+            if (progressTab) {
+                progressTab.textContent = this.input.value;
+            }
+        });
+    }
+
+    executeCommand(command) {
+        const progressTab = document.querySelector('#progress-tab .terminal-output');
+        if (progressTab) {
+            // Add the command to output with prompt
+            const cmdLine = document.createElement('div');
+            cmdLine.className = 'terminal-line command';
+            cmdLine.textContent = `$ ${command}`;
+            progressTab.appendChild(cmdLine);
+            
+            // Add command output
+            const output = document.createElement('div');
+            output.className = 'terminal-line output';
+            output.textContent = `Executing: ${command}`;
+            progressTab.appendChild(output);
+            
+            progressTab.scrollTop = progressTab.scrollHeight;
+        }
     }
 
     setupTerminalHeader() {
@@ -115,17 +134,11 @@ class Terminal {
     addEventListeners() {
         if (!this.input) return;
 
-        // Remove keydown event listener since we're using custom keyboard
         this.input.addEventListener('click', () => {
             if (window.keyboard) {
                 window.keyboard.toggleKeyboard(true);
             }
         });
-    }
-
-    executeCommand(command) {
-        // Command execution logic will be implemented here
-        this.write(`Command entered: ${command}`);
     }
 }
 
