@@ -82,24 +82,55 @@
     font-size: 16px;
 }
 
+/* Keyboard Styles */
 .keyboard-container {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     background-color: #1f1f1f;
+    transition: transform 0.3s ease;
+    z-index: 1000;
+}
+
+.keyboard-container.collapsed {
+    transform: translateY(100%);
+}
+
+.keyboard-controls {
+    display: flex;
+    justify-content: space-between;
     padding: 8px;
-    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.keyboard-control-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    padding: 5px;
+    cursor: pointer;
+}
+
+.keyboard-content {
+    padding: 8px;
+}
+
+.special-keys {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .keyboard-row {
     display: flex;
     gap: 4px;
     margin-bottom: 4px;
+    justify-content: center;
 }
 
 .key {
-    min-width: 40px;
+    min-width: 32px;
     height: 40px;
     background-color: #2d2d2d;
     border: none;
@@ -113,40 +144,33 @@
     user-select: none;
     transition: all 0.2s ease;
     padding: 0 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .key:active, .key.pressed, .key.active {
     background-color: #3d3d3d;
     transform: translateY(2px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* Special key styles */
-.function-key {
-    background-color: #252525;
-    font-size: 12px;
-}
-
 .modifier-key {
+    min-width: 45px;
     background-color: #353535;
-    min-width: 60px;
 }
 
 .control-key {
+    min-width: 55px;
     background-color: #353535;
-    min-width: 70px;
 }
 
 .space-key {
-    min-width: 200px;
+    min-width: 120px;
 }
 
-.navigation-key {
-    background-color: #252525;
+.special-keys .key {
     font-size: 12px;
-}
-
-.arrow-key {
-    background-color: #353535;
+    background-color: #252525;
 }
 
 @keyframes rgb-glow {
@@ -154,6 +178,36 @@
     33% { text-shadow: 0 0 10px #00ff00; }
     66% { text-shadow: 0 0 10px #0000ff; }
     100% { text-shadow: 0 0 10px #ff0000; }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .terminal {
+        height: calc(100vh - 240px);
+    }
+    
+    .keyboard-content {
+        padding: 4px;
+    }
+    
+    .key {
+        min-width: 28px;
+        height: 45px;
+        font-size: 12px;
+        padding: 0 4px;
+    }
+    
+    .modifier-key {
+        min-width: 40px;
+    }
+    
+    .control-key {
+        min-width: 45px;
+    }
+    
+    .space-key {
+        min-width: 100px;
+    }
 }
 
 /* Tools Menu */
@@ -180,49 +234,4 @@
     padding: 10px;
     max-height: 300px;
     overflow-y: auto;
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-    .terminal {
-        height: calc(100vh - 240px);
-    }
-    
-    .keyboard-container {
-        padding: 4px;
-    }
-    
-    .key {
-        min-width: 32px;
-        height: 45px;
-        font-size: 12px;
-        padding: 0 4px;
-    }
-    
-    .modifier-key {
-        min-width: 50px;
-    }
-    
-    .control-key {
-        min-width: 60px;
-    }
-    
-    .space-key {
-        min-width: 120px;
-    }
-    
-    .function-key, .navigation-key {
-        display: none;
-    }
-}
-
-/* Dark theme enhancements */
-@media (prefers-color-scheme: dark) {
-    .key {
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-    
-    .key:active, .key.pressed {
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-    }
 }
