@@ -5,6 +5,8 @@ class Terminal {
         this.input = document.querySelector('.command-input');
         this.history = [];
         this.historyIndex = -1;
+        this.username = 'user';
+        this.device = 'device';
         this.commandHandlers = {
             'help': () => this.showHelp(),
             'clear': () => this.clear(),
@@ -19,6 +21,14 @@ class Terminal {
     init() {
         this.welcomeMessage();
         this.addEventListeners();
+        this.updatePrompt();
+    }
+
+    updatePrompt() {
+        const prompt = document.querySelector('.prompt');
+        if (prompt) {
+            prompt.textContent = `${this.username}-${this.device}:~ ${this.username}$`;
+        }
     }
 
     welcomeMessage() {
@@ -65,7 +75,7 @@ class Terminal {
     }
 
     executeCommand(command) {
-        this.write(`$ ${command}`, 'command');
+        this.write(`${this.username}-${this.device}:~ ${this.username}$ ${command}`, 'command');
         const [cmd, ...args] = command.split(' ');
         
         if (this.commandHandlers[cmd]) {
@@ -137,7 +147,6 @@ class Terminal {
     }
 }
 
-// Initialize terminal when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new Terminal();
 });

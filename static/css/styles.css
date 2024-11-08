@@ -1,93 +1,126 @@
 :root {
-    --bg-color: #21266D;
+    --bg-color: #1c2340;
     --text-color: #ffffff;
-    --accent-color: #3498db;
-    --hover-color: #2980b9;
-    --button-bg: #1a1f5f;
+    --accent-color: #3b82f6;
+    --hover-color: #60a5fa;
+    --button-bg: #2c3657;
     --card-bg: rgba(255, 255, 255, 0.1);
-    --terminal-bg: rgba(0, 0, 0, 0.8);
+    --terminal-bg: #0f172a;
+    --border-color: #60a5fa;
+    --ios-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
-
-/* Theme variations preserved from original */
-body.light-theme {
-    --bg-color: #f0f0f0;
-    --text-color: #333333;
-    --accent-color: #2980b9;
-    --hover-color: #3498db;
-    --button-bg: #e0e0e0;
-    --card-bg: rgba(0, 0, 0, 0.05);
-    --terminal-bg: rgba(0, 0, 0, 0.9);
-}
-
-/* Other themes preserved but omitted for brevity */
 
 body {
     background-color: var(--bg-color);
-    font-family: 'Roboto', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     color: var(--text-color);
     margin: 0;
     padding: 0;
-    transition: all 0.3s ease;
+    -webkit-font-smoothing: antialiased;
 }
 
 .app-container {
     display: flex;
+    flex-direction: column;
     height: 100vh;
     overflow: hidden;
 }
 
+.ios-nav {
+    background-color: var(--terminal-bg);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--ios-shadow);
+}
+
+.ios-nav-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.ios-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.ios-button {
+    color: var(--accent-color);
+    font-size: 17px;
+    font-weight: 500;
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.ios-button:active {
+    opacity: 0.7;
+}
+
+.ios-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
 .tools-section {
     flex: 1;
-    padding: 20px;
+    padding: 16px;
     overflow-y: auto;
 }
 
 .terminal-section {
-    width: 40%;
+    height: 50%;
     background-color: var(--terminal-bg);
-    border-left: 1px solid var(--accent-color);
+    border-top: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
 }
 
-/* Preserved styles from original for tools grid */
 .tools-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
-    padding: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 16px;
 }
 
 .tool-card {
-    background-color: var(--card-bg);
-    border-radius: 10px;
+    background-color: var(--button-bg);
+    border-radius: 12px;
     padding: 20px;
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--ios-shadow);
 }
 
-/* Mobile optimizations */
+.tool-card:active {
+    transform: scale(0.98);
+}
+
 @media (max-width: 768px) {
-    .app-container {
-        flex-direction: column;
+    .terminal-section {
+        height: 40vh;
     }
 
     .tools-section {
-        height: 50vh;
+        height: calc(60vh - 44px);
     }
 
-    .terminal-section {
-        width: 100%;
-        height: 50vh;
+    .tools-grid {
+        grid-template-columns: 1fr;
     }
 
     .mobile-keyboard {
-        display: block;
         position: fixed;
         bottom: 0;
         width: 100%;
-        background-color: var(--bg-color);
-        z-index: 1000;
+        background-color: var(--terminal-bg);
+        padding: 8px;
+        box-shadow: 0 -1px 0 var(--border-color);
     }
 }
