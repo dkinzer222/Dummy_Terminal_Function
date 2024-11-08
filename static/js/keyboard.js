@@ -23,94 +23,111 @@ class VirtualKeyboard {
             <div class="keyboard-row">
                 ${row.map(key => {
                     let className = 'key';
-                    if (key === 'space') className += ' space';
-                    if (key === 'return') className += ' return';
-                    if (key === '😊' || key === '🎤') className += ' emoji';
-                    if (!key.match(/[A-Z]/)) className += ' special';
-                    return `<button class="${className}">${key === 'space' ? '' : key}</button>`;
+                    if (key === 'space') className += ' space-key';
+                    if (key === 'return') className += ' return-key';
+                    if (key === '😊' || key === '🎤') className += ' special-key';
+                    if (key === '⇧' || key === '⌫' || key === '123') className += ' system-key';
+                    return `<button class="${className}" data-key="${key}">
+                        ${key === 'space' ? '' : key}
+                    </button>`;
                 }).join('')}
             </div>
         `).join('');
     }
 
-    handleSpecialKeys(key) {
+    handleKey(key) {
         switch(key) {
             case '⇧':
                 this.isShift = !this.isShift;
                 this.updateShiftState();
                 break;
             case '⌫':
-                const input = this.input;
-                const start = input.selectionStart;
-                const end = input.selectionEnd;
-                if (start === end) {
-                    input.value = input.value.slice(0, start - 1) + input.value.slice(end);
-                    input.selectionStart = input.selectionEnd = start - 1;
-                } else {
-                    input.value = input.value.slice(0, start) + input.value.slice(end);
-                    input.selectionStart = input.selectionEnd = start;
-                }
+                this.handleBackspace();
                 break;
             case 'space':
-                this.input.value += ' ';
+                this.insertText(' ');
                 break;
             case 'return':
-                document.querySelector('.send-button').click();
+                this.handleReturn();
                 break;
             case '123':
-                this.isNumeric = !this.isNumeric;
-                this.updateNumericState();
+                this.toggleNumericKeyboard();
+                break;
+            case '😊':
+                // Emoji picker would go here
+                break;
+            case '🎤':
+                // Voice input would go here
                 break;
             default:
-                return false;
-        }
-        return true;
-    }
-
-    addEventListeners() {
-        this.container.addEventListener('click', (e) => {
-            const key = e.target.closest('.key');
-            if (!key) return;
-
-            const value = key.textContent;
-            
-            if (!this.handleSpecialKeys(value)) {
-                if (value.length === 1) {
-                    const input = this.input;
-                    const start = input.selectionStart;
-                    const end = input.selectionEnd;
-                    const char = this.isShift ? value.toUpperCase() : value.toLowerCase();
-                    input.value = input.value.slice(0, start) + char + input.value.slice(end);
-                    input.selectionStart = input.selectionEnd = start + 1;
-                    
+                if (key.length === 1) {
+                    this.insertText(this.isShift ? key.toUpperCase() : key.toLowerCase());
                     if (this.isShift) {
                         this.isShift = false;
                         this.updateShiftState();
                     }
                 }
-            }
-            
-            this.input.focus();
-        });
+        }
+        this.input.focus();
+    }
 
-        // Handle physical keyboard input
-        this.input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                document.querySelector('.send-button').click();
+    handleBackspace() {
+        const start = this.input.selectionStart;
+        const end = this.input.selectionEnd;
+        if (start === end) {
+            if (start > 0) {
+                this.input.value = this.input.value.slice(0, start - 1) + this.input.value.slice(end);
+                this.input.selectionStart = this.input.selectionEnd = start - 1;
             }
-        });
+        } else {
+            this.input.value = this.input.value.slice(0, start) + this.input.value.slice(end);
+            this.input.selectionStart = this.input.selectionEnd = start;
+        }
+    }
+
+    insertText(text) {
+        const start = this.input.selectionStart;
+        const end = this.input.selectionEnd;
+        this.input.value = this.input.value.slice(0, start) + text + this.input.value.slice(end);
+        this.input.selectionStart = this.input.selectionEnd = start + text.length;
+    }
+
+    handleReturn() {
+        const event = new KeyboardEvent('keydown', { key: 'Enter' });
+        this.input.dispatchEvent(event);
     }
 
     updateShiftState() {
-        const keys = this.container.querySelectorAll('.key:not(.special)');
+        const keys = this.container.querySelectorAll('.key:not(.special-key):not(.system-key)');
         keys.forEach(key => {
-            key.textContent = this.isShift ? key.textContent.toUpperCase() : key.textContent.toLowerCase();
+            const keyText = key.textContent.trim();
+            if (keyText.length === 1) {
+                key.textContent = this.isShift ? keyText.toUpperCase() : keyText.toLowerCase();
+            }
         });
     }
 
-    updateNumericState() {
-        // Implementation for numeric keyboard layout would go here
+    toggleNumericKeyboard() {
+        this.isNumeric = !this.isNumeric;
+        // Implementation for numeric keyboard would go here
+    }
+
+    addEventListeners() {
+        this.container.addEventListener('click', (e) => {
+            const key = e.target.closest('.key');
+            if (key) {
+                const keyValue = key.dataset.key;
+                this.handleKey(keyValue);
+            }
+        });
+
+        // Physical keyboard input handling
+        this.input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.handleReturn();
+            }
+        });
     }
 }
 
