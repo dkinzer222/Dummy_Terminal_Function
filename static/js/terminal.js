@@ -1,5 +1,7 @@
 class Terminal {
     constructor() {
+        this.glowTimeout = null;
+        this.commandCount = 0;
         this.init();
     }
 
@@ -56,6 +58,33 @@ class Terminal {
         }
     }
 
+    updateGlowEffects(type, intensity) {
+        const progressTab = document.querySelector('[data-tab="progress"]');
+        const outputTab = document.querySelector('[data-tab="output"]');
+        
+        switch(type) {
+            case 'typing':
+                progressTab.className = 'tab-button active glow-level-1';
+                break;
+            case 'command':
+                this.commandCount++;
+                const level = Math.min(Math.floor(this.commandCount / 2) + 1, 3);
+                progressTab.className = `tab-button active glow-level-${level}`;
+                break;
+            case 'output':
+                outputTab.className = `tab-button glow-level-${intensity}`;
+                break;
+        }
+
+        // Reset glow after inactivity
+        clearTimeout(this.glowTimeout);
+        this.glowTimeout = setTimeout(() => {
+            progressTab.className = 'tab-button' + (progressTab.classList.contains('active') ? ' active' : '');
+            outputTab.className = 'tab-button' + (outputTab.classList.contains('active') ? ' active' : '');
+            this.commandCount = 0;
+        }, 3000);
+    }
+
     setupInput() {
         if (!this.input) return;
         
@@ -71,6 +100,10 @@ class Terminal {
             if (window.keyboard) {
                 window.keyboard.toggleKeyboard(true);
             }
+        });
+
+        this.input.addEventListener('input', () => {
+            this.updateGlowEffects('typing', 1);
         });
     }
 
@@ -110,6 +143,9 @@ class Terminal {
         
         // Auto-scroll
         this.output.scrollTop = this.output.scrollHeight;
+        
+        // Update glow effects
+        this.updateGlowEffects('command', 2);
     }
 
     write(text, type = 'output') {

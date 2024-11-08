@@ -53,6 +53,13 @@ class App {
         this.tabContents.forEach(content => {
             content.classList.toggle('active', content.id === `${tabName}-tab`);
         });
+
+        if (tabName === 'output') {
+            const hasWebView = document.querySelector('.output-container iframe');
+            if (hasWebView && window.terminal) {
+                window.terminal.updateGlowEffects('output', 3);
+            }
+        }
     }
 
     handleSwipe(startX, endX) {

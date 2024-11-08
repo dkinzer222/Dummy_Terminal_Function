@@ -63,6 +63,12 @@ body {
     font-size: 1.2rem;
 }
 
+@keyframes tab-glow {
+    0% { box-shadow: 0 0 5px var(--primary-color); }
+    50% { box-shadow: 0 0 15px var(--primary-color); }
+    100% { box-shadow: 0 0 5px var(--primary-color); }
+}
+
 .tab-navigation {
     display: flex;
     padding: 0.5rem;
@@ -83,11 +89,24 @@ body {
     font-weight: 500;
     cursor: pointer;
     border-radius: 0.5rem;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, box-shadow 0.3s ease;
 }
 
 .tab-button.active {
     background-color: var(--primary-color);
+}
+
+.tab-button.glow-level-1 {
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+.tab-button.glow-level-2 {
+    box-shadow: 0 0 20px var(--primary-color);
+}
+
+.tab-button.glow-level-3 {
+    box-shadow: 0 0 30px var(--primary-color);
+    animation: tab-glow 2s infinite;
 }
 
 .app-content {
