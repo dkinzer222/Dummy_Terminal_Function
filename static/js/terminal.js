@@ -24,6 +24,36 @@ class Terminal {
         this.terminal = document.querySelector('.terminal');
         this.output = document.querySelector('.terminal-output');
         this.input = document.querySelector('.command-input');
+        
+        // Add resize handle
+        const resizeHandle = document.createElement('div');
+        resizeHandle.className = 'resize-handle';
+        resizeHandle.innerHTML = '<i class="bx bx-dots-vertical-rounded"></i>';
+        
+        const commandContainer = document.querySelector('.command-container');
+        if (commandContainer) {
+            commandContainer.appendChild(resizeHandle);
+            
+            let startY = 0;
+            let startHeight = 0;
+            
+            resizeHandle.addEventListener('mousedown', (e) => {
+                startY = e.clientY;
+                startHeight = parseInt(getComputedStyle(commandContainer).height);
+                document.addEventListener('mousemove', resize);
+                document.addEventListener('mouseup', stopResize);
+            });
+            
+            const resize = (e) => {
+                const diff = startY - e.clientY;
+                commandContainer.style.height = `${startHeight + diff}px`;
+            };
+            
+            const stopResize = () => {
+                document.removeEventListener('mousemove', resize);
+                document.removeEventListener('mouseup', stopResize);
+            };
+        }
     }
 
     setupInput() {
@@ -72,15 +102,14 @@ class Terminal {
     }
 
     executeCommand(command) {
+        // Display in output section with animation
         const output = document.createElement('div');
-        output.className = 'terminal-line output';
+        output.className = 'terminal-line output new-command';
         output.textContent = command;
         this.output.appendChild(output);
+        
+        // Auto-scroll
         this.output.scrollTop = this.output.scrollHeight;
-    }
-
-    welcomeMessage() {
-        // Remove welcome message
     }
 
     write(text, type = 'output') {

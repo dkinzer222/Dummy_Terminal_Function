@@ -35,6 +35,12 @@
     100% { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
 }
 
+@keyframes command-popup {
+    0% { transform: scale(0.95); opacity: 0; }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
 .terminal-line {
     white-space: pre-wrap;
     word-break: break-all;
@@ -48,6 +54,10 @@
     color: #00ff00;
     text-shadow: 0 0 5px #00ff00;
     animation: rgb-glow 3s infinite;
+}
+
+.terminal-line.new-command {
+    animation: command-popup 0.3s ease forwards;
 }
 
 .matrix-bg {
@@ -77,6 +87,24 @@
     padding: 10px;
     z-index: 1001;
     border-top: 1px solid rgba(107, 94, 217, 0.2);
+    transition: height 0.2s ease;
+}
+
+.resize-handle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(107, 94, 217, 0.2);
+    border-radius: 4px;
+    padding: 4px;
+    cursor: ns-resize;
+    z-index: 1002;
+}
+
+.resize-handle i {
+    color: #00ff00;
+    font-size: 16px;
 }
 
 .command-input {
