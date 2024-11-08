@@ -44,33 +44,6 @@
     background-color: transparent;
 }
 
-.mode-indicator {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: bold;
-    z-index: 10;
-    text-transform: uppercase;
-}
-
-.mode-indicator.practice {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.mode-indicator.system {
-    background-color: #f44336;
-    color: white;
-}
-
-.mode-indicator.virtual {
-    background-color: #2196F3;
-    color: white;
-}
-
 .matrix-bg {
     position: absolute;
     top: 0;
@@ -78,7 +51,7 @@
     right: 0;
     bottom: 0;
     z-index: 1;
-    opacity: 0.15;
+    opacity: 0;
     pointer-events: none;
 }
 
@@ -89,30 +62,6 @@
     position: relative;
     z-index: 2;
     margin-bottom: 40px;
-}
-
-@keyframes matrix-fall {
-    0% { transform: translateY(-100%); }
-    100% { transform: translateY(100%); }
-}
-
-@keyframes rgb-glow {
-    0% { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
-    33% { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
-    66% { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
-    100% { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
-}
-
-@keyframes command-popup {
-    0% { transform: scale(0.95); opacity: 0; }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-@keyframes key-glow {
-    0% { text-shadow: 0 0 5px #0088ff; }
-    50% { text-shadow: 0 0 15px #0088ff; }
-    100% { text-shadow: 0 0 5px #0088ff; }
 }
 
 .terminal-line {
@@ -145,18 +94,6 @@
 
 .terminal-line.help {
     color: #ffeb3b;
-}
-
-.terminal-line.new-command {
-    animation: command-popup 0.3s ease forwards;
-}
-
-.matrix-text {
-    position: absolute;
-    color: #00ff00;
-    text-shadow: 0 0 5px #00ff00;
-    font-size: 12px;
-    animation: matrix-fall 4s linear infinite;
 }
 
 .command-container {
@@ -200,8 +137,8 @@
     width: 80vw;
     left: 10vw;
     height: 30vh;
-    resize: both;
-    overflow: auto;
+    resize: none;
+    overflow: hidden;
     border: 1px solid rgba(0, 123, 255, 0.2);
 }
 
@@ -225,7 +162,6 @@
     text-shadow: 0 0 5px #0088ff;
     cursor: pointer;
     transition: all 0.3s ease;
-    animation: key-glow 2s infinite;
 }
 
 .key:active {

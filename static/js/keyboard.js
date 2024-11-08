@@ -137,49 +137,13 @@ class Keyboard {
                 this.container.style.left = '0';
                 this.container.style.bottom = '0';
                 this.container.style.top = 'auto';
+                this.container.style.height = '30vh';
             } else {
-                this.container.style.width = '80%';
-                this.container.style.left = '10%';
+                this.container.style.width = '80vw';
+                this.container.style.left = '10vw';
+                this.container.style.height = '30vh';
             }
         });
-
-        let startX, startY;
-        this.container.addEventListener('mousedown', (e) => {
-            if (this.isLocked || e.target === lockBtn) return;
-            this.isDragging = true;
-            startX = e.clientX - this.container.offsetLeft;
-            startY = e.clientY - this.container.offsetTop;
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!this.isDragging) return;
-            this.container.style.left = (e.clientX - startX) + 'px';
-            this.container.style.top = (e.clientY - startY) + 'px';
-            this.constrainPosition();
-        });
-
-        document.addEventListener('mouseup', () => {
-            this.isDragging = false;
-        });
-    }
-
-    constrainPosition() {
-        const rect = this.container.getBoundingClientRect();
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-
-        if (rect.right > windowWidth) {
-            this.container.style.left = (windowWidth - rect.width) + 'px';
-        }
-        if (rect.bottom > windowHeight) {
-            this.container.style.top = (windowHeight - rect.height) + 'px';
-        }
-        if (rect.left < 0) {
-            this.container.style.left = '0px';
-        }
-        if (rect.top < 0) {
-            this.container.style.top = '0px';
-        }
     }
 
     getKeyClassName(key) {
