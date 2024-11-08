@@ -17,7 +17,14 @@
                 <span>{{ title }}</span>
             </div>
             <div class="header-right">
-                <i class='bx bx-dots-vertical-rounded'></i>
+                <div class="mode-menu">
+                    <i class='bx bx-dots-vertical-rounded' id="mode-toggle"></i>
+                    <div class="mode-dropdown">
+                        <button class="mode-btn" data-mode="practice">Practice Mode</button>
+                        <button class="mode-btn" data-mode="system">System Mode</button>
+                        <button class="mode-btn" data-mode="virtual">Virtual Linux</button>
+                    </div>
+                </div>
             </div>
         </header>
 

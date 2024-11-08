@@ -41,6 +41,31 @@ class App {
         if (closeModal) {
             closeModal.addEventListener('click', () => this.closeModal());
         }
+
+        // Mode menu toggle
+        const modeToggle = document.getElementById('mode-toggle');
+        const modeDropdown = document.querySelector('.mode-dropdown');
+        
+        if (modeToggle && modeDropdown) {
+            modeToggle.addEventListener('click', () => {
+                modeDropdown.classList.toggle('visible');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!modeToggle.contains(e.target)) {
+                    modeDropdown.classList.remove('visible');
+                }
+            });
+
+            modeDropdown.addEventListener('click', (e) => {
+                const modeBtn = e.target.closest('.mode-btn');
+                if (modeBtn && window.terminal) {
+                    const mode = modeBtn.dataset.mode;
+                    window.terminal.setMode(mode);
+                    modeDropdown.classList.remove('visible');
+                }
+            });
+        }
     }
 
     switchTab(tabName) {

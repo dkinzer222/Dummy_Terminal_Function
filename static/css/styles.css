@@ -59,8 +59,45 @@ body {
     text-overflow: ellipsis;
 }
 
+.mode-menu {
+    position: relative;
+}
+
+.mode-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: rgba(26, 29, 38, 0.95);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px;
+    display: none;
+    z-index: 1000;
+}
+
+.mode-dropdown.visible {
+    display: block;
+}
+
+.mode-dropdown .mode-btn {
+    display: block;
+    width: 100%;
+    padding: 8px 16px;
+    text-align: left;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.mode-dropdown .mode-btn:hover {
+    background: rgba(107, 94, 217, 0.2);
+}
+
 .header-right i {
     font-size: 1.2rem;
+    cursor: pointer;
 }
 
 @keyframes tab-glow {
